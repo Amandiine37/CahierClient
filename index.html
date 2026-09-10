@@ -1,0 +1,2926 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cahier clientele</title>
+<meta name="description" content="Cahier clientele, rendez-vous et revenus d'auto-entreprise.">
+<meta name="theme-color" content="#4F6450">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+  /* ------------------------------------------------------------------
+     Charte reprise du site lesailesdeflo : verts sauge, creme et dore.
+     Les valeurs viennent des variables du site (--color_15, _14, _12,
+     _11, _42, _18...) relevees directement sur la page.
+     ------------------------------------------------------------------ */
+  :root{
+    --bg:#F8F6F1;
+    --surface:#FFFEFB;
+    --surface-2:#EDEFE7;
+    --ink:#2A332A;
+    --ink-muted:#798978;
+    --border:#CED2C9;
+    --accent:#4F6450;
+    --accent-strong:#38504D;
+    --accent-ink:#FFFEFB;
+    --or:#AF9D69;
+    --eau:#87ABA6;
+    --ok:#4F6450;
+    --alerte:#B0623F;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(42,51,42,.06), 0 6px 18px rgba(42,51,42,.07);
+    --font-display:"Fraunces",Georgia,"Times New Roman",serif;
+    --font-body:"Work Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1C2826;
+      --surface:#24312E;
+      --surface-2:#2C3A36;
+      --ink:#EDEFE7;
+      --ink-muted:#A4ADA1;
+      --border:#3A4A45;
+      --accent:#A9C0A8;
+      --accent-strong:#C3D5D3;
+      --accent-ink:#1C2826;
+      --or:#C9B685;
+      --eau:#87ABA6;
+      --ok:#8FBF95;
+      --alerte:#E0906D;
+      --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1C2826; --surface:#24312E; --surface-2:#2C3A36; --ink:#EDEFE7; --ink-muted:#A4ADA1;
+    --border:#3A4A45; --accent:#A9C0A8; --accent-strong:#C3D5D3; --accent-ink:#1C2826;
+    --or:#C9B685; --eau:#87ABA6; --ok:#8FBF95; --alerte:#E0906D;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"]{
+    --bg:#F8F6F1; --surface:#FFFEFB; --surface-2:#EDEFE7; --ink:#2A332A; --ink-muted:#798978;
+    --border:#CED2C9; --accent:#4F6450; --accent-strong:#38504D; --accent-ink:#FFFEFB;
+    --or:#AF9D69; --eau:#87ABA6; --ok:#4F6450; --alerte:#B0623F;
+    --shadow:0 1px 2px rgba(42,51,42,.06), 0 6px 18px rgba(42,51,42,.07);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    max-width:520px; margin:0 auto; min-height:100dvh;
+    display:flex; flex-direction:column; padding-bottom:96px; position:relative;
+  }
+
+  /* ---------- Barre du haut ---------- */
+  .topbar{
+    display:flex; align-items:center; gap:.65rem;
+    padding:1rem 1.05rem .7rem; position:sticky; top:0; background:var(--bg); z-index:5;
+  }
+  .brand-mark{
+    width:36px;height:36px;border-radius:11px; background:var(--accent); color:var(--accent-ink);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .brand-mark svg{width:19px;height:19px;}
+  .topbar .titres{flex:1;min-width:0;}
+  .topbar h1{font-family:var(--font-display); font-size:1.24rem; font-weight:500; margin:0; letter-spacing:.2px;}
+  .topbar p{margin:.1rem 0 0; font-size:.74rem; color:var(--ink-muted); letter-spacing:.08em; text-transform:uppercase;}
+  .icon-btn{
+    width:38px;height:38px;border-radius:11px; border:1px solid var(--border);
+    background:var(--surface); color:var(--ink-muted); display:flex;align-items:center;justify-content:center;
+    cursor:pointer; flex-shrink:0; padding:0;
+  }
+  .icon-btn svg{width:18px;height:18px;}
+  .icon-btn:active{background:var(--surface-2);}
+
+  main{flex:1; padding:.2rem 1.05rem 1rem;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- Blocs communs ---------- */
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:.85rem .9rem; box-shadow:var(--shadow); margin-bottom:.7rem;
+  }
+  .stats-row{display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin-bottom:.8rem;}
+  .stat-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:.75rem .85rem; box-shadow:var(--shadow);
+  }
+  .stat-label{font-size:.67rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-muted);}
+  .stat-value{font-family:var(--font-display); font-size:1.35rem; font-weight:500; margin-top:.15rem; line-height:1.15;}
+  .stat-value.petit{font-size:1.1rem;}
+  .stat-sub{font-size:.72rem; color:var(--ink-muted); margin-top:.1rem;}
+
+  h2.section{
+    font-family:var(--font-display); font-size:.95rem; font-weight:500; margin:1.1rem 0 .5rem;
+    display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+  }
+  h2.section .compteur{font-family:var(--font-body); font-size:.72rem; color:var(--ink-muted); font-weight:400;}
+
+  /* ---------- Selecteur de mois ---------- */
+  .mois-nav{
+    display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:.4rem .5rem; margin-bottom:.8rem; box-shadow:var(--shadow);
+  }
+  .mois-nav button{
+    width:34px;height:34px; border-radius:9px; border:0; background:transparent; color:var(--accent);
+    font-size:1.1rem; cursor:pointer; display:flex;align-items:center;justify-content:center;
+  }
+  .mois-nav button:active{background:var(--surface-2);}
+  .mois-nav .libelle{
+    font-family:var(--font-display); font-size:1rem; font-weight:500; text-align:center; flex:1;
+    text-transform:capitalize;
+  }
+
+  /* ---------- Recherche ---------- */
+  .recherche{position:relative; margin-bottom:.8rem;}
+  .recherche input{
+    width:100%; padding:.7rem .8rem .7rem 2.2rem; border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--surface); color:var(--ink);
+    font-family:inherit; font-size:.92rem;
+  }
+  .recherche svg{
+    position:absolute; left:.75rem; top:50%; transform:translateY(-50%);
+    width:16px;height:16px; color:var(--ink-muted); pointer-events:none;
+  }
+
+  /* ---------- Listes ---------- */
+  .ligne{
+    display:flex; align-items:center; gap:.7rem; width:100%; text-align:left;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:.7rem .8rem; margin-bottom:.5rem; box-shadow:var(--shadow);
+    font-family:inherit; color:inherit; cursor:pointer;
+  }
+  .ligne:active{background:var(--surface-2);}
+  .pastille{
+    width:38px;height:38px;border-radius:50%; flex-shrink:0;
+    background:var(--surface-2); color:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display); font-size:.9rem; font-weight:500;
+  }
+  .ligne .corps{flex:1; min-width:0;}
+  .ligne .nom{display:block; font-size:.94rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ligne .detail{display:block; font-size:.76rem; color:var(--ink-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:.1rem;}
+  .ligne .droite{text-align:right; flex-shrink:0; max-width:48%;}
+  .ligne .montant{display:block; font-family:var(--font-display); font-size:.98rem; font-weight:500; white-space:nowrap;}
+  .ligne .sous{display:block; font-size:.7rem; color:var(--ink-muted); margin-top:.15rem;}
+
+  .jour-titre{
+    font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-muted);
+    margin:.9rem 0 .4rem;
+  }
+
+  .etiquette{
+    display:inline-block; font-size:.65rem; letter-spacing:.05em; text-transform:uppercase;
+    padding:.16rem .42rem; border-radius:6px; background:var(--surface-2); color:var(--ink-muted);
+    border:1px solid var(--border);
+  }
+  .etiquette.prevu{background:var(--surface-2); color:var(--eau); border-color:var(--eau);}
+  .etiquette.impaye{background:transparent; color:var(--alerte); border-color:var(--alerte);}
+  .etiquette.annule{text-decoration:line-through;}
+  .etiquette.or{color:var(--or); border-color:var(--or);}
+
+  .vide{
+    text-align:center; color:var(--ink-muted); font-size:.85rem;
+    padding:2rem 1rem; border:1px dashed var(--border); border-radius:var(--radius);
+  }
+  .vide strong{display:block; font-family:var(--font-display); font-size:1rem; color:var(--ink); margin-bottom:.3rem; font-weight:500;}
+
+  /* ---------- Barres ---------- */
+  .barre-ligne{display:flex; align-items:center; gap:.6rem; margin-bottom:.45rem; font-size:.8rem;}
+  .barre-ligne .lib{width:6.5rem; flex-shrink:0; color:var(--ink-muted);}
+  .barre-piste{flex:1; height:8px; background:var(--surface-2); border-radius:99px; overflow:hidden;}
+  /* display:block indispensable : sur un span inline, width/height sont ignores. */
+  .barre-jauge{display:block; height:100%; background:var(--accent); border-radius:99px;}
+  .barre-ligne .val{width:4.6rem; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums;}
+
+  .histo{display:flex; align-items:flex-end; gap:.28rem; height:96px; margin:.4rem 0 .2rem;}
+  .histo .colonne{flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:.25rem; height:100%;}
+  .histo .tige{width:100%; background:var(--accent); border-radius:5px 5px 2px 2px; min-height:2px;}
+  .histo .colonne.courant .tige{background:var(--or);}
+  .histo .mois{font-size:.6rem; color:var(--ink-muted); text-transform:uppercase;}
+
+  /* ---------- Onglets du bas ---------- */
+  .tabbar{
+    position:fixed; bottom:0; left:0; right:0; z-index:6;
+    max-width:520px; margin:0 auto;
+    display:grid; grid-template-columns:repeat(3,1fr);
+    background:var(--surface); border-top:1px solid var(--border);
+    padding:.4rem .3rem calc(.4rem + env(safe-area-inset-bottom));
+  }
+  .tab{
+    background:none;border:0;cursor:pointer; padding:.35rem .2rem;
+    display:flex; flex-direction:column; align-items:center; gap:.18rem;
+    color:var(--ink-muted); font-family:inherit; font-size:.66rem; letter-spacing:.03em;
+  }
+  .tab svg{width:20px;height:20px;}
+  .tab.active{color:var(--accent);}
+
+  .fab{
+    position:fixed; bottom:calc(74px + env(safe-area-inset-bottom)); z-index:7;
+    left:50%; transform:translateX(calc(-50% + 148px));
+    width:54px;height:54px;border-radius:50%; border:0; cursor:pointer;
+    background:var(--accent); color:var(--accent-ink);
+    box-shadow:0 6px 20px rgba(79,100,80,.34);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .fab svg{width:22px;height:22px;}
+  .fab[hidden]{display:none;}
+
+  /* ---------- Feuilles (formulaires) ---------- */
+  .sheet{
+    position:fixed; inset:0; z-index:20; background:rgba(28,40,38,.45);
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  .sheet[hidden]{display:none;}
+  .sheet-inner{
+    width:100%; max-width:520px; max-height:92dvh; overflow-y:auto;
+    background:var(--bg); border-radius:18px 18px 0 0; padding:1rem 1.05rem calc(1.4rem + env(safe-area-inset-bottom));
+  }
+  .sheet-head{
+    display:flex; align-items:center; justify-content:space-between; gap:.6rem;
+    margin-bottom:.9rem; position:sticky; top:0; background:var(--bg); padding-top:.2rem; z-index:2;
+  }
+  .sheet-head h3{font-family:var(--font-display); font-size:1.08rem; font-weight:500; margin:0;}
+  .fermer{background:none;border:0;font-size:1.5rem;line-height:1;color:var(--ink-muted);cursor:pointer;padding:0 .2rem;}
+
+  label{display:block; font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-muted); margin-bottom:.28rem;}
+  input,select,textarea{
+    width:100%; padding:.62rem .7rem; border-radius:11px; border:1px solid var(--border);
+    background:var(--surface); color:var(--ink); font-family:inherit; font-size:.95rem;
+  }
+  textarea{min-height:74px; resize:vertical;}
+  .champ{margin-bottom:.75rem;}
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:.6rem;}
+  .trio{display:grid; grid-template-columns:1fr 1fr 1fr; gap:.6rem;}
+  .aide{font-size:.72rem; color:var(--ink-muted); margin-top:.3rem; line-height:1.45;}
+
+  .bouton{
+    width:100%; padding:.78rem; border-radius:12px; border:0; cursor:pointer;
+    background:var(--accent); color:var(--accent-ink); font-family:inherit;
+    font-size:.95rem; font-weight:500; letter-spacing:.02em;
+  }
+  .bouton.secondaire{background:var(--surface); color:var(--ink); border:1px solid var(--border);}
+  .bouton.danger{background:transparent; color:var(--alerte); border:1px solid var(--alerte);}
+  .bouton + .bouton{margin-top:.5rem;}
+  .boutons-duo{display:grid; grid-template-columns:1fr 1fr; gap:.55rem;}
+  .boutons-duo .bouton + .bouton{margin-top:0;}
+
+  .case{
+    display:flex; align-items:flex-start; gap:.6rem; background:var(--surface);
+    border:1px solid var(--border); border-radius:12px; padding:.7rem .8rem; cursor:pointer;
+  }
+  .case input{width:20px;height:20px;flex-shrink:0;margin:0;accent-color:var(--accent);}
+  .case .txt{flex:1;}
+  .case .txt b{display:block; font-size:.9rem; font-weight:500; text-transform:none; letter-spacing:0;}
+  .case .txt span{display:block; font-size:.74rem; color:var(--ink-muted); text-transform:none; letter-spacing:0; line-height:1.45; margin-top:.15rem;}
+
+  .rangee{display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.42rem 0; font-size:.86rem;}
+  .rangee + .rangee{border-top:1px solid var(--border);}
+  .rangee .lib{color:var(--ink-muted);}
+  .rangee .val{font-variant-numeric:tabular-nums; font-weight:500;}
+  .rangee .val.gros{font-family:var(--font-display); font-size:1.05rem;}
+
+  .lien-contact{
+    display:flex; align-items:center; gap:.6rem; padding:.6rem .7rem; border-radius:11px;
+    background:var(--surface); border:1px solid var(--border); color:inherit; text-decoration:none;
+    font-size:.88rem; margin-bottom:.45rem;
+  }
+  .lien-contact svg{width:16px;height:16px;color:var(--accent);flex-shrink:0;}
+  .lien-contact span{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+  /* ---------- Bandeaux ---------- */
+  .bandeau{
+    border-radius:var(--radius); padding:.75rem .85rem; margin-bottom:.7rem;
+    background:var(--surface-2); border:1px solid var(--border); font-size:.84rem; line-height:1.5;
+  }
+  .bandeau.attention{border-color:var(--or);}
+  .bandeau b{font-weight:600;}
+  .bandeau .actions{display:flex; gap:.5rem; margin-top:.6rem; flex-wrap:wrap;}
+  .bandeau .actions button{
+    flex:1; min-width:8rem; padding:.5rem .6rem; border-radius:9px; cursor:pointer;
+    font-family:inherit; font-size:.8rem; border:1px solid var(--border);
+    background:var(--surface); color:var(--ink);
+  }
+  .bandeau .actions button.principal{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+  .bandeau[hidden]{display:none;}
+
+  #maj-bandeau{
+    position:fixed; left:0; right:0; bottom:0; z-index:30; max-width:520px; margin:0 auto;
+    background:var(--accent); color:var(--accent-ink);
+    padding:.85rem 1rem calc(.85rem + env(safe-area-inset-bottom));
+    display:flex; align-items:center; gap:.7rem; font-size:.86rem;
+  }
+  #maj-bandeau button{
+    border:0;border-radius:9px;padding:.45rem .8rem;cursor:pointer;
+    background:var(--accent-ink); color:var(--accent); font-family:inherit; font-size:.82rem; font-weight:500;
+  }
+  #maj-bandeau[hidden]{display:none;}
+
+  /* ---------- Confirmation maison ---------- */
+  .confirm{position:fixed; inset:0; z-index:40; background:rgba(28,40,38,.5); display:flex; align-items:center; justify-content:center; padding:1.2rem;}
+  .confirm[hidden]{display:none;}
+  .confirm-box{background:var(--bg); border-radius:16px; padding:1.1rem; max-width:340px; width:100%; box-shadow:var(--shadow);}
+  .confirm-box h4{font-family:var(--font-display); font-size:1.02rem; font-weight:500; margin:0 0 .4rem;}
+  .confirm-box p{font-size:.86rem; color:var(--ink-muted); margin:0 0 1rem; line-height:1.5;}
+
+  .statut{font-size:.8rem; margin-top:.5rem; line-height:1.45;}
+  .statut.ok{color:var(--ok);}
+  .statut.ko{color:var(--alerte);}
+  .statut:empty{display:none;}
+
+  .mini-note{font-size:.72rem; color:var(--ink-muted); line-height:1.5; margin:.5rem 0 0;}
+  .separateur{height:1px; background:var(--border); margin:1rem 0;}
+  .droite-txt{text-align:right;}
+  .nowrap{white-space:nowrap;}
+
+  /* ---------- Rapport imprimable (PDF via l'impression) ---------- */
+  .rapport-choix{display:flex; gap:.5rem; flex-wrap:wrap; align-items:stretch;}
+  .rapport-choix select{flex:1; min-width:150px;}
+  .rapport-choix .bouton{flex:1; min-width:150px; width:auto;}
+
+  #sheet-rapport .sheet-inner{background:var(--surface); padding:0;}
+  .rapport-actions{
+    display:flex; gap:.6rem; align-items:center; padding:.8rem 1rem;
+    position:sticky; top:0; z-index:2; background:var(--surface); border-bottom:1px solid var(--border);
+  }
+  .rapport-actions .bouton{width:auto; flex:1;}
+  .rapport-actions .bouton.secondaire{flex:0 0 auto; padding:.78rem 1rem;}
+  .rapport-actions .bouton + .bouton{margin-top:0;}
+
+  .rapport{padding:1.1rem 1rem 1.6rem; color:var(--ink); font-size:.82rem; line-height:1.5;}
+  .rapport-tete{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:1rem;
+    border-bottom:2px solid var(--accent); padding-bottom:.7rem; margin-bottom:1rem;
+  }
+  .rapport-tete h1{font-family:var(--font-display); font-size:1.35rem; font-weight:500; margin:0 0 .15rem;}
+  .rapport-periode{font-size:.95rem; color:var(--accent); font-weight:600;}
+  .rapport-meta{font-size:.7rem; color:var(--ink-muted); text-align:right; white-space:nowrap;}
+  .rapport h2{font-family:var(--font-display); font-size:.98rem; font-weight:500; margin:1.3rem 0 .5rem;}
+  .rapport-kpis{display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem;}
+  .rapport-kpi{border:1px solid var(--border); border-radius:10px; padding:.55rem .65rem; background:var(--surface-2);}
+  .rapport-kpi .k-lib{display:block; font-size:.64rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-muted); margin-bottom:.2rem;}
+  .rapport-kpi .k-val{display:block; font-family:var(--font-display); font-size:1.12rem; font-weight:500; font-variant-numeric:tabular-nums;}
+  .rapport-tableau{overflow-x:auto;}
+  .rapport table{width:100%; border-collapse:collapse; font-size:.74rem; font-variant-numeric:tabular-nums;}
+  .rapport th, .rapport td{text-align:left; padding:.4rem .45rem; border-bottom:1px solid var(--border); vertical-align:top;}
+  .rapport thead th{
+    font-size:.64rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted);
+    border-bottom:1px solid var(--ink-muted); font-weight:600; white-space:nowrap;
+  }
+  .rapport td.num, .rapport th.num{text-align:right; white-space:nowrap;}
+  .rapport tbody tr:nth-child(even){background:var(--surface-2);}
+  .rapport tfoot td{font-weight:700; border-top:2px solid var(--accent); border-bottom:none; padding-top:.5rem;}
+  .rapport td.attente{color:var(--alerte); font-weight:600;}
+  .rapport-note{font-size:.72rem; color:var(--ink-muted); margin:1rem 0 0; padding-top:.6rem; border-top:1px dashed var(--border);}
+  .rapport-vide{font-size:.82rem; color:var(--ink-muted); padding:1rem 0; text-align:center;}
+
+  /* Mode impression : on ne garde que le rapport, en clair sur blanc. */
+  body.impression .app,
+  body.impression .sheet:not(#sheet-rapport),
+  body.impression .confirm,
+  body.impression #maj-bandeau,
+  body.impression .rapport-actions{display:none !important;}
+  body.impression #sheet-rapport{position:static; inset:auto; display:block; background:none;}
+  body.impression #sheet-rapport .sheet-inner{
+    max-width:none; max-height:none; overflow:visible; border-radius:0; padding:0; background:#fff;
+  }
+  body.impression .rapport{padding:0; font-size:10.5pt; color:#000;}
+
+  @media print{
+    @page{size:A4 portrait; margin:14mm 13mm;}
+    /* Palette claire forcée : sinon un téléphone en thème sombre imprime noir. */
+    :root, :root[data-theme="dark"], :root[data-theme="light"]{
+      --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F1F2EC; --ink:#1A1F1A; --ink-muted:#5A6559;
+      --border:#C9CEC4; --accent:#4F6450; --alerte:#9A4A2A; --shadow:none;
+    }
+    html, body{background:#fff !important;}
+    .rapport h2{break-after:avoid;}
+    .rapport table{break-inside:auto;}
+    .rapport tr{break-inside:avoid;}
+    .rapport thead{display:table-header-group;}
+    .rapport tfoot{display:table-footer-group;}
+    .rapport-kpis{break-inside:avoid;}
+  }
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21c-4-6-8-7-8-11a4 4 0 0 1 8-2 4 4 0 0 1 8 2c0 4-4 5-8 11z"/>
+      </svg>
+    </div>
+    <div class="titres">
+      <h1>Cahier clientèle</h1>
+      <p id="nom-cabinet">Les Ailes de Flo</p>
+    </div>
+    <button class="icon-btn" id="btn-theme" type="button" title="Thème clair / sombre">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+      </svg>
+    </button>
+    <button class="icon-btn" id="btn-reglages" type="button" title="Réglages et sauvegarde">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>
+      </svg>
+    </button>
+  </header>
+
+  <main>
+    <div class="bandeau attention" id="rappel-sauvegarde" hidden></div>
+
+    <!-- ======================= CLIENTES ======================= -->
+    <section class="view active" id="view-clientes">
+      <div class="recherche">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+        <input type="search" id="recherche-cliente" placeholder="Rechercher un nom, un mail, un téléphone" autocomplete="off">
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Fiches</div>
+          <div class="stat-value" id="kpi-nb-clientes">0</div>
+          <div class="stat-sub" id="kpi-nouvelles">&nbsp;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Vues ce mois</div>
+          <div class="stat-value" id="kpi-vues-mois">0</div>
+          <div class="stat-sub" id="kpi-fideles">&nbsp;</div>
+        </div>
+      </div>
+      <button class="bouton secondaire" type="button" id="btn-mail-groupe" style="margin-bottom:.3rem">✉️ Écrire à mes clientes</button>
+      <h2 class="section">Répertoire <span class="compteur" id="compteur-clientes"></span></h2>
+      <div id="liste-clientes"></div>
+    </section>
+
+    <!-- ======================= RENDEZ-VOUS ======================= -->
+    <section class="view" id="view-rdv">
+      <div class="mois-nav">
+        <button type="button" id="rdv-mois-prec" aria-label="Mois précédent">‹</button>
+        <div class="libelle" id="rdv-mois-libelle">—</div>
+        <button type="button" id="rdv-mois-suiv" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Encaissé</div>
+          <div class="stat-value" id="kpi-rdv-encaisse">0 €</div>
+          <div class="stat-sub" id="kpi-rdv-seances">&nbsp;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">À encaisser</div>
+          <div class="stat-value petit" id="kpi-rdv-attente">0 €</div>
+          <div class="stat-sub" id="kpi-rdv-prevus">&nbsp;</div>
+        </div>
+      </div>
+      <div id="liste-rdv"></div>
+    </section>
+
+    <!-- ======================= REVENUS ======================= -->
+    <section class="view" id="view-revenus">
+      <div class="mois-nav">
+        <button type="button" id="rev-mois-prec" aria-label="Mois précédent">‹</button>
+        <div class="libelle" id="rev-mois-libelle">—</div>
+        <button type="button" id="rev-mois-suiv" aria-label="Mois suivant">›</button>
+      </div>
+      <div id="bloc-mois"></div>
+      <h2 class="section">Charges URSSAF</h2>
+      <div id="bloc-urssaf"></div>
+      <h2 class="section">Dépenses <span class="compteur">du mois</span></h2>
+      <div id="bloc-depenses"></div>
+      <h2 class="section">Ce qu'il te reste <span class="compteur">estimation</span></h2>
+      <div id="bloc-resultat"></div>
+      <h2 class="section">Modes de règlement <span class="compteur">du mois</span></h2>
+      <div class="card" id="bloc-reglements"></div>
+      <h2 class="section">Cartes cadeaux <span class="compteur">du mois</span></h2>
+      <div id="bloc-cartes"></div>
+      <h2 class="section">Les 12 derniers mois</h2>
+      <div class="card" id="bloc-histo"></div>
+      <h2 class="section">Année <span class="compteur" id="annee-libelle"></span></h2>
+      <div class="card" id="bloc-annee"></div>
+      <h2 class="section">Rapport PDF</h2>
+      <div class="card">
+        <div class="rapport-choix">
+          <select id="rapport-periode" aria-label="Période du rapport"></select>
+          <button class="bouton" type="button" id="btn-rapport">Aperçu du rapport</button>
+        </div>
+        <p class="mini-note">Un mois ou une année entière : séances, encaissements, modes de règlement, prestations, dépenses et charges. Depuis l'aperçu, « Enregistrer en PDF ».</p>
+        <div class="statut" id="statut-rapport"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" data-view="clientes" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>
+      </svg>
+      Clientes
+    </button>
+    <button class="tab" data-view="rdv" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>
+      </svg>
+      Rendez-vous
+    </button>
+    <button class="tab" data-view="revenus" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/>
+      </svg>
+      Revenus
+    </button>
+  </nav>
+
+  <button class="fab" id="fab" type="button" aria-label="Ajouter">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+</div>
+
+<!-- ======================= FEUILLE : CLIENTE ======================= -->
+<div class="sheet" id="sheet-cliente" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3 id="titre-cliente">Nouvelle cliente</h3>
+      <button class="fermer" type="button" data-ferme="sheet-cliente">&times;</button>
+    </div>
+    <form id="form-cliente" autocomplete="off">
+      <input type="hidden" name="id">
+      <div class="duo">
+        <div class="champ"><label for="c-prenom">Prénom</label><input id="c-prenom" name="prenom" required></div>
+        <div class="champ"><label for="c-nom">Nom</label><input id="c-nom" name="nom"></div>
+      </div>
+      <div class="champ"><label for="c-email">Adresse mail</label><input id="c-email" name="email" type="email" inputmode="email"></div>
+      <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" inputmode="tel"></div>
+      <div class="champ"><label for="c-notes">Notes (préférences, contre-indications…)</label><textarea id="c-notes" name="notes"></textarea></div>
+      <div class="statut" id="statut-cliente"></div>
+      <button class="bouton" type="submit">Enregistrer</button>
+      <button class="bouton danger" type="button" id="supprimer-cliente" hidden>Supprimer cette fiche</button>
+    </form>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : FICHE CLIENTE ======================= -->
+<div class="sheet" id="sheet-fiche" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3 id="titre-fiche">Fiche</h3>
+      <button class="fermer" type="button" data-ferme="sheet-fiche">&times;</button>
+    </div>
+    <div id="corps-fiche"></div>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : RENDEZ-VOUS ======================= -->
+<div class="sheet" id="sheet-rdv" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3 id="titre-rdv">Nouveau rendez-vous</h3>
+      <button class="fermer" type="button" data-ferme="sheet-rdv">&times;</button>
+    </div>
+    <form id="form-rdv" autocomplete="off">
+      <input type="hidden" name="id">
+      <div class="champ">
+        <label for="r-cliente">Cliente</label>
+        <select id="r-cliente" name="clienteId" required></select>
+      </div>
+      <div class="duo">
+        <div class="champ"><label for="r-date">Date</label><input id="r-date" name="date" type="date" required></div>
+        <div class="champ"><label for="r-heure">Heure</label><input id="r-heure" name="heure" type="time"></div>
+      </div>
+      <div class="champ">
+        <label for="r-prestation">Prestation</label>
+        <input id="r-prestation" name="prestation" list="liste-prestations" required placeholder="Massage californien - 1h">
+        <datalist id="liste-prestations"></datalist>
+      </div>
+      <div class="duo">
+        <div class="champ"><label for="r-duree">Durée (min)</label><input id="r-duree" name="duree" type="number" min="0" step="5" inputmode="numeric"></div>
+        <div class="champ"><label for="r-montant">Montant réglé (€)</label><input id="r-montant" name="montant" type="number" min="0" step="0.01" inputmode="decimal"></div>
+      </div>
+      <div class="duo">
+        <div class="champ">
+          <label for="r-statut">Statut</label>
+          <select id="r-statut" name="statut">
+            <option value="prevu">À venir</option>
+            <option value="honore">Séance faite</option>
+            <option value="annule">Annulé</option>
+          </select>
+        </div>
+        <div class="champ">
+          <label for="r-reglement">Règlement</label>
+          <select id="r-reglement" name="reglement">
+            <option value="">Pas encore réglé</option>
+            <option value="especes">Espèces</option>
+            <option value="cb">Carte bancaire</option>
+            <option value="virement">Virement</option>
+            <option value="cheque">Chèque</option>
+            <option value="cadeau">Réglée par une carte cadeau</option>
+          </select>
+        </div>
+      </div>
+      <p class="aide" id="aide-cadeau" hidden>« Réglée par une carte cadeau » : cette séance ne sera pas recomptée dans le chiffre d'affaires, car la carte a déjà été encaissée le jour de sa vente.</p>
+      <div class="champ"><label for="r-notes">Notes de séance</label><textarea id="r-notes" name="notes"></textarea></div>
+      <div class="statut" id="statut-rdv"></div>
+      <button class="bouton" type="submit">Enregistrer</button>
+      <button class="bouton danger" type="button" id="supprimer-rdv" hidden>Supprimer ce rendez-vous</button>
+    </form>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : VENTE DE CARTE CADEAU ======================= -->
+<div class="sheet" id="sheet-carte" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3 id="titre-carte">Vendre une carte cadeau</h3>
+      <button class="fermer" type="button" data-ferme="sheet-carte">&times;</button>
+    </div>
+    <form id="form-carte" autocomplete="off">
+      <input type="hidden" name="id">
+      <div class="duo">
+        <div class="champ"><label for="k-date">Date de vente</label><input id="k-date" name="date" type="date" required></div>
+        <div class="champ"><label for="k-montant">Montant (€)</label><input id="k-montant" name="montant" type="number" min="0" step="0.01" inputmode="decimal" required></div>
+      </div>
+      <div class="champ">
+        <label for="k-reglement">Réglée en</label>
+        <select id="k-reglement" name="reglement">
+          <option value="especes">Espèces</option>
+          <option value="cb">Carte bancaire</option>
+          <option value="virement">Virement</option>
+          <option value="cheque">Chèque</option>
+        </select>
+      </div>
+      <div class="champ"><label for="k-beneficiaire">Pour / de la part de (facultatif)</label><input id="k-beneficiaire" name="beneficiaire" placeholder="Ex. offerte par Marie à sa sœur"></div>
+      <div class="champ"><label for="k-notes">Note (facultatif)</label><textarea id="k-notes" name="notes"></textarea></div>
+      <p class="aide">La vente compte dans le chiffre d'affaires à cette date. Quand la carte sera utilisée, enregistre la séance en choisissant « Réglée par une carte cadeau » : elle ne sera pas recomptée.</p>
+      <div class="statut" id="statut-carte"></div>
+      <button class="bouton" type="submit">Enregistrer la vente</button>
+      <button class="bouton danger" type="button" id="supprimer-carte" hidden>Supprimer cette vente</button>
+    </form>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : DÉPENSE ======================= -->
+<div class="sheet" id="sheet-depense" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3 id="titre-depense">Nouvelle dépense</h3>
+      <button class="fermer" type="button" data-ferme="sheet-depense">&times;</button>
+    </div>
+    <form id="form-depense" autocomplete="off">
+      <input type="hidden" name="id">
+      <div class="duo">
+        <div class="champ"><label for="d-date">Date</label><input id="d-date" name="date" type="date" required></div>
+        <div class="champ"><label for="d-montant">Montant (€)</label><input id="d-montant" name="montant" type="number" min="0" step="0.01" inputmode="decimal" required></div>
+      </div>
+      <div class="champ">
+        <label for="d-categorie">Poste de dépense</label>
+        <input id="d-categorie" name="categorie" list="liste-categories" required placeholder="Loyer, produits…">
+        <datalist id="liste-categories"></datalist>
+      </div>
+      <div class="champ"><label for="d-libelle">Libellé (facultatif)</label><input id="d-libelle" name="libelle" placeholder="Ex. Huiles de massage"></div>
+      <div class="champ"><label for="d-notes">Note (facultatif)</label><textarea id="d-notes" name="notes"></textarea></div>
+      <p class="aide">En micro-entreprise, tes dépenses ne réduisent ni ton chiffre d'affaires ni tes charges URSSAF (calculées sur le CA brut). Ce suivi sert à connaître ce qu'il te reste vraiment.</p>
+      <div class="statut" id="statut-depense"></div>
+      <button class="bouton" type="submit">Enregistrer la dépense</button>
+      <button class="bouton danger" type="button" id="supprimer-depense" hidden>Supprimer cette dépense</button>
+    </form>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : MAIL GROUPÉ ======================= -->
+<div class="sheet" id="sheet-mail" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3>Écrire à mes clientes</h3>
+      <button class="fermer" type="button" data-ferme="sheet-mail">&times;</button>
+    </div>
+    <div class="bandeau" style="margin-bottom:.8rem">
+      Chaque cliente est mise en <b>copie cachée</b> (Cci)&nbsp;: personne ne voit les adresses des autres.
+    </div>
+    <div class="champ"><label for="m-objet">Objet</label><input id="m-objet" placeholder="Ex. Fermeture exceptionnelle en août"></div>
+    <div class="champ"><label for="m-corps">Message</label><textarea id="m-corps" style="min-height:130px" placeholder="Bonjour,&#10;&#10;…&#10;&#10;À bientôt,&#10;Florence"></textarea></div>
+    <h2 class="section">Destinataires <span class="compteur" id="mail-compteur"></span></h2>
+    <p class="aide" id="mail-sans-mail"></p>
+    <div id="mail-liste"></div>
+    <div class="statut" id="statut-mail"></div>
+    <button class="bouton" type="button" id="btn-ouvrir-mail" style="margin-top:.7rem">Ouvrir mon appli mail</button>
+    <div class="boutons-duo" style="margin-top:.5rem">
+      <button class="bouton secondaire" type="button" id="btn-copier-adresses">Copier les adresses (Cci)</button>
+      <button class="bouton secondaire" type="button" id="btn-copier-message">Copier le message</button>
+    </div>
+    <div id="mail-panneau-copie" hidden style="margin-top:.7rem">
+      <label for="mail-zone-copie" id="mail-zone-label">À copier</label>
+      <textarea id="mail-zone-copie" readonly style="min-height:120px;font-size:.78rem"></textarea>
+    </div>
+    <p class="mini-note">« Ouvrir mon appli mail » prépare un brouillon&nbsp;: rien n'est envoyé tant que tu n'appuies pas sur Envoyer. Si ta liste est longue, ton appli mail peut la refuser&nbsp;: utilise alors « Copier les adresses » et colle-les dans le champ Cci.</p>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : RÉGLAGES ======================= -->
+<div class="sheet" id="sheet-reglages" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3>Réglages &amp; sauvegarde</h3>
+      <button class="fermer" type="button" data-ferme="sheet-reglages">&times;</button>
+    </div>
+
+    <h2 class="section">Mon activité</h2>
+    <form id="form-reglages" autocomplete="off">
+      <div class="champ"><label for="g-cabinet">Nom affiché</label><input id="g-cabinet" name="cabinet" placeholder="Les Ailes de Flo"></div>
+      <div class="champ"><label for="g-email">Ton adresse mail</label><input id="g-email" name="email" type="email" inputmode="email" placeholder="pour les envois groupés"><p class="aide">Utilisée comme expéditeur visible de tes mails groupés (tu en reçois une copie). Tes clientes restent en copie cachée.</p></div>
+      <div class="duo">
+        <div class="champ">
+          <label for="g-taux">Charges URSSAF (%)</label>
+          <input id="g-taux" name="taux" type="number" min="0" max="100" step="0.1" inputmode="decimal">
+        </div>
+        <div class="champ">
+          <label for="g-plafond">Plafond micro (€)</label>
+          <input id="g-plafond" name="plafond" type="number" min="0" step="100" inputmode="numeric">
+        </div>
+      </div>
+      <p class="aide">
+        Le taux sert uniquement à calculer ce que tu mets de côté. Les taux et le plafond
+        changent chaque année&nbsp;: <b>vérifie-les sur urssaf.fr</b> et corrige-les ici.
+        Repères courants à confirmer&nbsp;: prestations de services commerciales (BIC) ≈&nbsp;21,2&nbsp;%,
+        activité libérale (BNC) ≈&nbsp;24,6&nbsp;%, plus le versement libératoire si tu l'as choisi.
+      </p>
+      <div class="champ" style="margin-top:.75rem">
+        <label for="g-periodicite">Déclaration URSSAF</label>
+        <select id="g-periodicite" name="periodicite">
+          <option value="mensuelle">Mensuelle</option>
+          <option value="trimestrielle">Trimestrielle</option>
+        </select>
+      </div>
+      <button class="bouton" type="submit">Enregistrer les réglages</button>
+      <div class="statut" id="statut-reglages"></div>
+    </form>
+
+    <div class="separateur"></div>
+    <h2 class="section">Prestations et tarifs</h2>
+    <p class="aide">Reprises du site les-ailes-de-flo.com. Elles pré-remplissent la durée et le montant d'un rendez-vous.</p>
+    <div id="liste-prestations-reglages"></div>
+    <form id="form-prestation" autocomplete="off" style="margin-top:.6rem">
+      <div class="trio">
+        <div class="champ" style="grid-column:span 3"><label for="p-nom">Nouvelle prestation</label><input id="p-nom" name="nom" placeholder="Nom"></div>
+      </div>
+      <div class="duo">
+        <div class="champ"><label for="p-duree">Durée (min)</label><input id="p-duree" name="duree" type="number" min="0" step="5" inputmode="numeric"></div>
+        <div class="champ"><label for="p-prix">Tarif (€)</label><input id="p-prix" name="prix" type="number" min="0" step="0.01" inputmode="decimal"></div>
+      </div>
+      <button class="bouton secondaire" type="submit">Ajouter la prestation</button>
+      <div class="statut" id="statut-prestation"></div>
+    </form>
+
+    <div class="separateur"></div>
+    <h2 class="section">Exports et sauvegarde</h2>
+    <div class="card">
+      <div class="rangee"><span class="lib">Clientes</span><span class="val" id="cpt-clientes">0</span></div>
+      <div class="rangee"><span class="lib">Rendez-vous</span><span class="val" id="cpt-rdv">0</span></div>
+      <div class="rangee"><span class="lib">Dépenses</span><span class="val" id="cpt-depenses">0</span></div>
+      <div class="rangee"><span class="lib">Dernière sauvegarde</span><span class="val" id="cpt-sauvegarde">jamais</span></div>
+    </div>
+    <div class="boutons-duo">
+      <button class="bouton secondaire" type="button" id="export-csv">Export Excel</button>
+      <button class="bouton secondaire" type="button" id="export-pdf">Export PDF</button>
+    </div>
+    <button class="bouton secondaire" type="button" id="export-json" style="margin-top:.5rem">Sauvegarde complète</button>
+    <p class="aide">Excel : toutes les séances + le récapitulatif par mois. PDF : le rapport d'un mois ou d'une année. Sauvegarde complète : à garder pour tout restaurer.</p>
+    <div class="statut" id="statut-sauvegarde"></div>
+    <div id="panneau-copie" hidden style="margin-top:.7rem">
+      <label for="zone-copie">Contenu à copier puis coller dans un fichier</label>
+      <textarea id="zone-copie" readonly style="min-height:150px;font-size:.72rem"></textarea>
+      <button class="bouton secondaire" type="button" id="btn-copier" style="margin-top:.5rem">Copier dans le presse-papier</button>
+    </div>
+
+    <div class="champ" style="margin-top:1rem">
+      <label for="g-frequence">Me rappeler de sauvegarder</label>
+      <select id="g-frequence">
+        <option value="0">Jamais</option>
+        <option value="7">Toutes les semaines</option>
+        <option value="14">Tous les 15 jours</option>
+        <option value="30">Tous les mois</option>
+      </select>
+    </div>
+
+    <div class="separateur"></div>
+    <h2 class="section">Restaurer</h2>
+    <p class="aide">Colle ici le contenu d'une sauvegarde complète pour la réinstaller. Cela remplace tout le contenu actuel.</p>
+    <div class="champ"><textarea id="zone-restaurer" placeholder="Colle le contenu de la sauvegarde…"></textarea></div>
+    <button class="bouton secondaire" type="button" id="btn-restaurer">Restaurer cette sauvegarde</button>
+    <div class="statut" id="statut-restaurer"></div>
+
+    <div class="separateur"></div>
+    <p class="mini-note">
+      <b>Où sont les données&nbsp;?</b> Uniquement dans ce navigateur, sur cet appareil. Rien n'est envoyé
+      sur internet, aucun compte n'est nécessaire. En contrepartie&nbsp;: si tu vides les données du
+      navigateur ou changes de téléphone sans sauvegarde, tout est perdu. Pense à l'export régulier.
+    </p>
+    <p class="mini-note">
+      Ce cahier contient des données personnelles de tes clientes (nom, mail, téléphone).
+      Garde ton téléphone verrouillé, et supprime une fiche dès qu'une cliente te le demande.
+    </p>
+    <p class="mini-note" id="version-app"></p>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : RAPPORT PDF ======================= -->
+<div class="sheet" id="sheet-rapport" hidden>
+  <div class="sheet-inner">
+    <div class="rapport-actions">
+      <button class="bouton secondaire" type="button" data-ferme="sheet-rapport">Fermer</button>
+      <button class="bouton" type="button" id="btn-imprimer">Enregistrer en PDF</button>
+    </div>
+    <div class="rapport" id="rapport"></div>
+  </div>
+</div>
+
+<!-- ======================= CONFIRMATION ======================= -->
+<div class="confirm" id="confirm" hidden>
+  <div class="confirm-box">
+    <h4 id="confirm-titre">Confirmer</h4>
+    <p id="confirm-texte"></p>
+    <div class="boutons-duo">
+      <button class="bouton secondaire" type="button" id="confirm-non">Annuler</button>
+      <button class="bouton" type="button" id="confirm-oui">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<div id="maj-bandeau" hidden>
+  <span style="flex:1">Une nouvelle version de l'appli est prête.</span>
+  <button type="button" id="maj-recharger">Recharger</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var VERSION = "1.3";
+
+  /* ================================================================
+     Clés de stockage
+     ================================================================ */
+  var K_CLIENTES = "cahier_clientes_v1";
+  var K_RDV = "cahier_rdv_v1";
+  var K_CARTES = "cahier_cartes_v1";
+  var K_DEPENSES = "cahier_depenses_v1";
+  var K_REGLAGES = "cahier_reglages_v1";
+  var K_PRESTATIONS = "cahier_prestations_v1";
+  var K_PROVISIONS = "cahier_provisions_v1";
+  var K_PAIEMENTS = "cahier_paiements_v1";
+  var K_SAUVEGARDE = "cahier_sauvegarde_v1";
+  var K_THEME = "cahier_theme";
+
+  /* Prestations relevées sur le site les-ailes-de-flo.com. */
+  var PRESTATIONS_DEFAUT = [
+    { nom: "Massage californien - 1h", duree: 60, prix: 50 },
+    { nom: "Massage lomi-lomi - 1h", duree: 60, prix: 50 },
+    { nom: "Massage pierres chaudes - 1h30", duree: 90, prix: 70 },
+    { nom: "Drainage DIC - Ventre - 1h", duree: 60, prix: 60 },
+    { nom: "Drainage DIC - Jambes - 1h", duree: 60, prix: 60 },
+    { nom: "Drainage DIC - 2 zones - 2h", duree: 120, prix: 110 },
+    { nom: "Cure 5 séances DIC - 1 zone", duree: 300, prix: 275 },
+    { nom: "Cure 5 séances DIC - 2 zones", duree: 600, prix: 525 },
+    { nom: "Drainage doux - Corps - 1h", duree: 60, prix: 60 },
+    { nom: "Japonais du visage - 30 min", duree: 30, prix: 35 },
+    { nom: "Massage Amma assis - 25 min", duree: 25, prix: 30 },
+    { nom: "Escale dos - 25 min", duree: 25, prix: 30 },
+    { nom: "Escale jambes - 25 min", duree: 25, prix: 30 },
+    { nom: "Madérothérapie (option)", duree: 10, prix: 10 },
+    { nom: "Carte cadeau", duree: 0, prix: 0 }
+  ];
+
+  var REGLAGES_DEFAUT = {
+    cabinet: "Les Ailes de Flo",
+    email: "",
+    taux: 24.6,
+    plafond: 77700,
+    periodicite: "trimestrielle",
+    frequenceRappel: 14
+  };
+
+  // Modes d'encaissement réel (ce qui rentre dans le CA). « Carte cadeau »
+  // n'y est PAS : une séance réglée par carte cadeau a déjà été encaissée le
+  // jour de la vente de la carte — la recompter gonflerait le chiffre.
+  var MODES = {
+    especes: "Espèces",
+    cb: "Carte bancaire",
+    virement: "Virement",
+    cheque: "Chèque"
+  };
+  // Modes possibles pour une SÉANCE : les modes réels + « réglée par carte cadeau »
+  // (n'ajoute rien au CA) + vide (pas encore réglé).
+  var MODE_CADEAU = "cadeau";
+  function libelleMode(code){
+    if(code === MODE_CADEAU) return "Carte cadeau";
+    return MODES[code] || "";
+  }
+
+  // Postes de dépense proposés par défaut (l'utilisatrice peut en taper d'autres).
+  var CATEGORIES_DEPENSE = [
+    "Loyer", "Produits & consommables", "Matériel", "Linge & blanchisserie",
+    "Fournitures", "Déplacements", "Assurance", "Publicité & communication",
+    "Formation", "Frais bancaires", "Cotisation / adhésion", "Autre"
+  ];
+
+  /* ================================================================
+     Stockage
+     ================================================================ */
+  var stockageOk = true;
+
+  function lire(cle, defaut){
+    try{
+      var brut = localStorage.getItem(cle);
+      if(!brut) return defaut;
+      var v = JSON.parse(brut);
+      return (v === null || v === undefined) ? defaut : v;
+    }catch(e){ return defaut; }
+  }
+
+  function ecrire(cle, valeur){
+    try{
+      localStorage.setItem(cle, JSON.stringify(valeur));
+      return true;
+    }catch(e){
+      stockageOk = false;
+      return false;
+    }
+  }
+
+  function testerStockage(){
+    try{
+      localStorage.setItem("__test__", "1");
+      localStorage.removeItem("__test__");
+      return true;
+    }catch(e){ return false; }
+  }
+
+  var clientes = lire(K_CLIENTES, []);
+  var rdvs = lire(K_RDV, []);
+  var cartes = lire(K_CARTES, []);
+  var depenses = lire(K_DEPENSES, []);
+  var prestations = lire(K_PRESTATIONS, null) || PRESTATIONS_DEFAUT.slice();
+  var provisions = lire(K_PROVISIONS, {});
+  var paiements = lire(K_PAIEMENTS, []);
+  var reglages = Object.assign({}, REGLAGES_DEFAUT, lire(K_REGLAGES, {}));
+
+  function sauverClientes(){ ecrire(K_CLIENTES, clientes); }
+  function sauverRdv(){ ecrire(K_RDV, rdvs); }
+  function sauverCartes(){ ecrire(K_CARTES, cartes); }
+  function sauverDepenses(){ ecrire(K_DEPENSES, depenses); }
+  function sauverPrestations(){ ecrire(K_PRESTATIONS, prestations); }
+  function sauverProvisions(){ ecrire(K_PROVISIONS, provisions); }
+  function sauverPaiements(){ ecrire(K_PAIEMENTS, paiements); }
+  function sauverReglages(){ ecrire(K_REGLAGES, reglages); }
+
+  /* ================================================================
+     Petits outils
+     ================================================================ */
+  var $ = function(sel){ return document.querySelector(sel); };
+  var euros = new Intl.NumberFormat("fr-FR", { style:"currency", currency:"EUR" });
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function argent(n){ return euros.format(Number(n) || 0); }
+  function arrondi(n){ return Math.round((Number(n) || 0) * 100) / 100; }
+  function nombre(v){ var n = parseFloat(String(v).replace(",", ".")); return isNaN(n) ? 0 : n; }
+
+  function echapper(s){
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function isoDuJour(d){
+    var x = d || new Date();
+    var m = String(x.getMonth() + 1).padStart(2, "0");
+    var j = String(x.getDate()).padStart(2, "0");
+    return x.getFullYear() + "-" + m + "-" + j;
+  }
+  function cleMois(iso){ return iso ? String(iso).slice(0, 7) : ""; }
+  function moisCourant(){ return cleMois(isoDuJour()); }
+
+  function libelleMois(cle){
+    if(!cle) return "";
+    var p = cle.split("-");
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, 1);
+    return d.toLocaleDateString("fr-FR", { month:"long", year:"numeric" });
+  }
+  function libelleMoisCourt(cle){
+    var p = cle.split("-");
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, 1);
+    return d.toLocaleDateString("fr-FR", { month:"short" }).replace(".", "");
+  }
+  function decalerMois(cle, pas){
+    var p = cle.split("-");
+    var d = new Date(Number(p[0]), Number(p[1]) - 1 + pas, 1);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+  }
+  function dateLongue(iso){
+    if(!iso) return "";
+    var p = iso.split("-");
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    return d.toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long" });
+  }
+  function dateCourte(iso){
+    if(!iso) return "";
+    var p = iso.split("-");
+    return p[2] + "/" + p[1] + "/" + p[0];
+  }
+  function initiales(c){
+    var a = (c.prenom || "").trim().charAt(0);
+    var b = (c.nom || "").trim().charAt(0);
+    return (a + b).toUpperCase() || "?";
+  }
+  function nomComplet(c){
+    if(!c) return "Cliente supprimée";
+    return ((c.prenom || "") + " " + (c.nom || "")).trim() || "Sans nom";
+  }
+  function sansAccent(s){
+    return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+
+  function clienteDe(id){
+    for(var i = 0; i < clientes.length; i++) if(clientes[i].id === id) return clientes[i];
+    return null;
+  }
+  function rdvDe(id){
+    for(var i = 0; i < rdvs.length; i++) if(rdvs[i].id === id) return rdvs[i];
+    return null;
+  }
+
+  /* --- Règles d'encaissement (une seule source de vérité) ---
+     Le chiffre d'affaires d'une micro-entreprise se compte à l'ENCAISSEMENT.
+     - Une séance réglée en espèces/CB/virement/chèque : encaissée le jour de
+       la séance -> compte dans le CA.
+     - Une VENTE de carte cadeau : encaissée le jour de la vente -> compte.
+     - Une séance réglée PAR une carte cadeau : déjà encaissée à la vente de
+       la carte -> ne compte PAS (sinon on compterait deux fois).
+     - Une séance faite mais pas encore payée : « à encaisser », hors CA. */
+  function encaisseSeance(r){
+    return r.statut === "honore" && !!r.reglement && r.reglement !== MODE_CADEAU && nombre(r.montant) > 0;
+  }
+  function regleParCarte(r){
+    return r.statut === "honore" && r.reglement === MODE_CADEAU;
+  }
+  function estImpaye(r){
+    return r.statut === "honore" && !r.reglement;
+  }
+
+  /* Bilan d'encaissement sur une période (fonction « dansPeriode(dateISO) »).
+     Fusionne les séances encaissées et les ventes de cartes cadeaux : c'est
+     LA fonction que tous les écrans et le PDF appellent, pour qu'ils ne
+     puissent jamais afficher des totaux différents. */
+  function bilan(dansPeriode){
+    var b = {
+      caSeances: 0, caCartes: 0, ca: 0,
+      nbSeancesEncaissees: 0, nbSeancesFaites: 0, nbCartes: 0,
+      attente: 0, cadeauUtilise: 0, nbCadeau: 0,
+      parMode: {}, parPresta: {}, parMois: {}
+    };
+    function moisBucket(cle){
+      if(!b.parMois[cle]) b.parMois[cle] = { seances: 0, cartes: 0, ca: 0, nb: 0 };
+      return b.parMois[cle];
+    }
+    for(var i = 0; i < rdvs.length; i++){
+      var r = rdvs[i];
+      if(r.statut !== "honore" || !dansPeriode(r.date)) continue;
+      var m = nombre(r.montant);
+      var km = cleMois(r.date);
+      b.nbSeancesFaites++;
+      moisBucket(km).nb++;
+      if(encaisseSeance(r)){
+        var p = r.prestation || "Séance";
+        b.caSeances += m; b.nbSeancesEncaissees++;
+        b.parMode[r.reglement] = arrondi((b.parMode[r.reglement] || 0) + m);
+        if(!b.parPresta[p]) b.parPresta[p] = { nb: 0, total: 0 };
+        b.parPresta[p].nb++; b.parPresta[p].total = arrondi(b.parPresta[p].total + m);
+        moisBucket(km).seances = arrondi(moisBucket(km).seances + m);
+        moisBucket(km).ca = arrondi(moisBucket(km).ca + m);
+      }else if(regleParCarte(r)){
+        b.cadeauUtilise += m; b.nbCadeau++;
+      }else if(estImpaye(r)){
+        b.attente += m;
+      }
+    }
+    for(var j = 0; j < cartes.length; j++){
+      var v = cartes[j];
+      if(!dansPeriode(v.date)) continue;
+      var mv = nombre(v.montant);
+      var kmv = cleMois(v.date);
+      b.caCartes += mv; b.nbCartes++;
+      if(v.reglement && MODES[v.reglement]) b.parMode[v.reglement] = arrondi((b.parMode[v.reglement] || 0) + mv);
+      moisBucket(kmv).cartes = arrondi(moisBucket(kmv).cartes + mv);
+      moisBucket(kmv).ca = arrondi(moisBucket(kmv).ca + mv);
+    }
+    b.caSeances = arrondi(b.caSeances);
+    b.caCartes = arrondi(b.caCartes);
+    b.ca = arrondi(b.caSeances + b.caCartes);
+    b.attente = arrondi(b.attente);
+    b.cadeauUtilise = arrondi(b.cadeauUtilise);
+    return b;
+  }
+
+  function estDuMois(cle){ return function(d){ return cleMois(d) === cle; }; }
+  function estDeLAnnee(annee){ return function(d){ return String(d).slice(0, 4) === String(annee); }; }
+
+  function caDuMois(cle){ return bilan(estDuMois(cle)).ca; }
+  function caDeLAnnee(annee){ return bilan(estDeLAnnee(annee)).ca; }
+  function carteDe(id){
+    for(var i = 0; i < cartes.length; i++) if(cartes[i].id === id) return cartes[i];
+    return null;
+  }
+  function depenseDe(id){
+    for(var i = 0; i < depenses.length; i++) if(depenses[i].id === id) return depenses[i];
+    return null;
+  }
+  /* Dépenses sur une période (fonction dansPeriode). En micro-entreprise elles
+     NE réduisent PAS le CA ni les charges URSSAF : ce total sert uniquement à
+     estimer le bénéfice réel. */
+  function totalDepenses(dansPeriode){
+    var t = 0, parCat = {};
+    for(var i = 0; i < depenses.length; i++){
+      var d = depenses[i];
+      if(!dansPeriode(d.date)) continue;
+      var m = nombre(d.montant);
+      t += m;
+      var cat = d.categorie || "Autre";
+      parCat[cat] = arrondi((parCat[cat] || 0) + m);
+    }
+    return { total: arrondi(t), parCat: parCat };
+  }
+  function categoriesConnues(){
+    // Catégories par défaut + celles déjà saisies, sans doublon.
+    var vues = {}, liste = [];
+    CATEGORIES_DEPENSE.forEach(function(c){ if(!vues[c]){ vues[c] = true; liste.push(c); } });
+    depenses.forEach(function(d){ var c = (d.categorie || "").trim(); if(c && !vues[c]){ vues[c] = true; liste.push(c); } });
+    return liste;
+  }
+
+  /* ================================================================
+     Confirmation maison (confirm() est bloqué dans certains cadres)
+     ================================================================ */
+  var confirmAction = null;
+  function demanderConfirmation(titre, texte, siOui, libelleOk){
+    $("#confirm-titre").textContent = titre;
+    $("#confirm-texte").textContent = texte;
+    $("#confirm-oui").textContent = libelleOk || "Confirmer";
+    confirmAction = siOui;
+    $("#confirm").hidden = false;
+  }
+  function fermerConfirmation(){ $("#confirm").hidden = true; confirmAction = null; }
+  $("#confirm-non").addEventListener("click", fermerConfirmation);
+  $("#confirm-oui").addEventListener("click", function(){
+    var f = confirmAction; fermerConfirmation(); if(f) f();
+  });
+  $("#confirm").addEventListener("click", function(ev){ if(ev.target === this) fermerConfirmation(); });
+
+  function message(cible, texte, kind){
+    var el = $(cible);
+    if(!el) return;
+    el.textContent = texte;
+    el.className = "statut " + (kind || "");
+    if(texte) window.setTimeout(function(){ if(el.textContent === texte){ el.textContent = ""; el.className = "statut"; } }, 6000);
+  }
+
+  /* ================================================================
+     Feuilles
+     ================================================================ */
+  function ouvrirFeuille(id){ $("#" + id).hidden = false; }
+  function fermerFeuille(id){ $("#" + id).hidden = true; }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-ferme]"), function(b){
+    b.addEventListener("click", function(){ fermerFeuille(b.getAttribute("data-ferme")); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".sheet"), function(s){
+    s.addEventListener("click", function(ev){ if(ev.target === s) s.hidden = true; });
+  });
+
+  /* ================================================================
+     Thème
+     ================================================================ */
+  (function initTheme(){
+    var t = null;
+    try{ t = localStorage.getItem(K_THEME); }catch(e){}
+    if(t) document.documentElement.setAttribute("data-theme", t);
+  })();
+  $("#btn-theme").addEventListener("click", function(){
+    var actuel = document.documentElement.getAttribute("data-theme");
+    var sombreSysteme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var suivant;
+    if(actuel === "dark") suivant = "light";
+    else if(actuel === "light") suivant = "dark";
+    else suivant = sombreSysteme ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try{ localStorage.setItem(K_THEME, suivant); }catch(e){}
+  });
+
+  /* ================================================================
+     Onglets
+     ================================================================ */
+  var vueActive = "clientes";
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(tab){
+    tab.addEventListener("click", function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){ t.classList.remove("active"); });
+      Array.prototype.forEach.call(document.querySelectorAll(".view"), function(v){ v.classList.remove("active"); });
+      tab.classList.add("active");
+      vueActive = tab.getAttribute("data-view");
+      $("#view-" + vueActive).classList.add("active");
+      $("#fab").hidden = (vueActive === "revenus");
+      window.scrollTo(0, 0);
+      toutAfficher();
+    });
+  });
+
+  $("#fab").addEventListener("click", function(){
+    if(vueActive === "clientes") ouvrirFormCliente(null);
+    else ouvrirFormRdv(null);
+  });
+
+  /* ================================================================
+     Onglet 1 — Clientes
+     ================================================================ */
+  var filtreCliente = "";
+  $("#recherche-cliente").addEventListener("input", function(){
+    filtreCliente = sansAccent(this.value.trim());
+    afficherClientes();
+  });
+
+  function derniereVenue(clienteId){
+    var meilleur = "";
+    for(var i = 0; i < rdvs.length; i++){
+      var r = rdvs[i];
+      if(r.clienteId === clienteId && r.statut === "honore" && r.date > meilleur) meilleur = r.date;
+    }
+    return meilleur;
+  }
+  function prochaineVenue(clienteId){
+    var jour = isoDuJour(), meilleur = "";
+    for(var i = 0; i < rdvs.length; i++){
+      var r = rdvs[i];
+      if(r.clienteId === clienteId && r.statut === "prevu" && r.date >= jour){
+        if(!meilleur || r.date < meilleur) meilleur = r.date;
+      }
+    }
+    return meilleur;
+  }
+  function totalDepense(clienteId){
+    // Ce que cette cliente a réglé directement (hors carte cadeau, comptée à
+    // sa vente). Les cartes qu'elle a achetées sont ajoutées séparément si on
+    // les lui a rattachées.
+    var t = 0;
+    for(var i = 0; i < rdvs.length; i++){
+      if(rdvs[i].clienteId === clienteId && encaisseSeance(rdvs[i])) t += nombre(rdvs[i].montant);
+    }
+    for(var j = 0; j < cartes.length; j++){
+      if(cartes[j].clienteId === clienteId) t += nombre(cartes[j].montant);
+    }
+    return arrondi(t);
+  }
+  function nbSeances(clienteId){
+    var n = 0;
+    for(var i = 0; i < rdvs.length; i++){
+      if(rdvs[i].clienteId === clienteId && rdvs[i].statut === "honore") n++;
+    }
+    return n;
+  }
+
+  function afficherClientes(){
+    var jour = isoDuJour();
+    var moisCle = moisCourant();
+
+    var vuesCeMois = {};
+    var nouvellesCeMois = 0;
+    for(var i = 0; i < rdvs.length; i++){
+      if(cleMois(rdvs[i].date) === moisCle && rdvs[i].statut !== "annule") vuesCeMois[rdvs[i].clienteId] = true;
+    }
+    for(var j = 0; j < clientes.length; j++){
+      if(cleMois(clientes[j].creeLe) === moisCle) nouvellesCeMois++;
+    }
+    var fideles = 0;
+    for(var k = 0; k < clientes.length; k++) if(nbSeances(clientes[k].id) >= 3) fideles++;
+
+    $("#kpi-nb-clientes").textContent = clientes.length;
+    $("#kpi-nouvelles").textContent = nouvellesCeMois > 0 ? ("+" + nouvellesCeMois + " ce mois-ci") : "aucune nouvelle ce mois";
+    $("#kpi-vues-mois").textContent = Object.keys(vuesCeMois).length;
+    $("#kpi-fideles").textContent = fideles > 0 ? (fideles + " fidèle" + (fideles > 1 ? "s" : "") + " (3 séances +)") : " ";
+
+    var liste = clientes.slice();
+    if(filtreCliente){
+      liste = liste.filter(function(c){
+        // Le telephone est indexe avec ET sans separateurs : on retrouve
+        // la fiche qu'on tape « 06 98 » ou « 0698 ».
+        var telBrut = String(c.tel || "").replace(/[\s.\-()]/g, "");
+        var champ = sansAccent(nomComplet(c) + " " + (c.email || "") + " " + (c.tel || "") + " " + telBrut);
+        return champ.indexOf(filtreCliente) !== -1;
+      });
+    }
+    liste.sort(function(a, b){
+      return nomComplet(a).localeCompare(nomComplet(b), "fr", { sensitivity:"base" });
+    });
+
+    $("#compteur-clientes").textContent = liste.length ? (liste.length + (liste.length > 1 ? " fiches" : " fiche")) : "";
+
+    var hote = $("#liste-clientes");
+    if(!liste.length){
+      hote.innerHTML = clientes.length
+        ? '<div class="vide"><strong>Aucun résultat</strong>Essaie un autre nom, mail ou numéro.</div>'
+        : '<div class="vide"><strong>Le cahier est vide</strong>Appuie sur le + en bas à droite pour créer ta première fiche cliente.</div>';
+      return;
+    }
+
+    var html = "";
+    for(var n = 0; n < liste.length; n++){
+      var c = liste[n];
+      var proch = prochaineVenue(c.id);
+      var derni = derniereVenue(c.id);
+      var detail;
+      if(proch) detail = "Prochain RDV : " + dateCourte(proch);
+      else if(derni) detail = "Dernière venue : " + dateCourte(derni);
+      else detail = c.tel ? c.tel : (c.email || "Aucune séance enregistrée");
+
+      html += '<button class="ligne" type="button" data-fiche="' + echapper(c.id) + '">'
+        + '<span class="pastille">' + echapper(initiales(c)) + '</span>'
+        + '<span class="corps">'
+        + '<span class="nom">' + echapper(nomComplet(c)) + '</span>'
+        + '<span class="detail">' + echapper(detail) + '</span>'
+        + '</span>'
+        + '<span class="droite">'
+        + '<span class="montant">' + nbSeances(c.id) + '</span>'
+        + '<span class="sous">séance' + (nbSeances(c.id) > 1 ? "s" : "") + '</span>'
+        + '</span>'
+        + '</button>';
+    }
+    hote.innerHTML = html;
+    Array.prototype.forEach.call(hote.querySelectorAll("[data-fiche]"), function(b){
+      b.addEventListener("click", function(){ ouvrirFiche(b.getAttribute("data-fiche")); });
+    });
+    void jour;
+  }
+
+  /* ---------- Formulaire cliente ---------- */
+  function ouvrirFormCliente(id){
+    var f = $("#form-cliente");
+    f.reset();
+    var c = id ? clienteDe(id) : null;
+    $("#titre-cliente").textContent = c ? "Modifier la fiche" : "Nouvelle cliente";
+    $("#supprimer-cliente").hidden = !c;
+    f.id.value = c ? c.id : "";
+    if(c){
+      f.prenom.value = c.prenom || "";
+      f.nom.value = c.nom || "";
+      f.email.value = c.email || "";
+      f.tel.value = c.tel || "";
+      f.notes.value = c.notes || "";
+    }
+    ouvrirFeuille("sheet-cliente");
+  }
+
+  $("#form-cliente").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var f = ev.target;
+    var prenom = f.prenom.value.trim();
+    if(!prenom){ message("#statut-cliente", "Le prénom est obligatoire.", "ko"); return; }
+
+    var existante = f.id.value ? clienteDe(f.id.value) : null;
+    if(existante){
+      existante.prenom = prenom;
+      existante.nom = f.nom.value.trim();
+      existante.email = f.email.value.trim();
+      existante.tel = f.tel.value.trim();
+      existante.notes = f.notes.value.trim();
+    }else{
+      clientes.push({
+        id: uid(),
+        prenom: prenom,
+        nom: f.nom.value.trim(),
+        email: f.email.value.trim(),
+        tel: f.tel.value.trim(),
+        notes: f.notes.value.trim(),
+        creeLe: isoDuJour()
+      });
+    }
+    sauverClientes();
+    fermerFeuille("sheet-cliente");
+    toutAfficher();
+  });
+
+  $("#supprimer-cliente").addEventListener("click", function(){
+    var id = $("#form-cliente").id.value;
+    var c = clienteDe(id);
+    if(!c) return;
+    var n = 0;
+    for(var i = 0; i < rdvs.length; i++) if(rdvs[i].clienteId === id) n++;
+    demanderConfirmation(
+      "Supprimer " + nomComplet(c) + " ?",
+      n > 0
+        ? "Ses " + n + " rendez-vous seront supprimés aussi, y compris dans les revenus des mois passés. C'est définitif."
+        : "Cette fiche sera définitivement effacée.",
+      function(){
+        clientes = clientes.filter(function(x){ return x.id !== id; });
+        rdvs = rdvs.filter(function(r){ return r.clienteId !== id; });
+        sauverClientes(); sauverRdv();
+        fermerFeuille("sheet-cliente");
+        toutAfficher();
+      },
+      "Supprimer"
+    );
+  });
+
+  /* ---------- Fiche cliente ---------- */
+  function ouvrirFiche(id){
+    var c = clienteDe(id);
+    if(!c) return;
+    $("#titre-fiche").textContent = nomComplet(c);
+
+    var siens = rdvs.filter(function(r){ return r.clienteId === id; });
+    siens.sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); });
+
+    var html = "";
+
+    if(c.tel){
+      html += '<a class="lien-contact" href="tel:' + echapper(c.tel.replace(/\s/g, "")) + '">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>'
+        + '<span>' + echapper(c.tel) + '</span></a>';
+    }
+    if(c.email){
+      html += '<a class="lien-contact" href="mailto:' + echapper(c.email) + '">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6 10-6"/></svg>'
+        + '<span>' + echapper(c.email) + '</span></a>';
+    }
+    if(!c.tel && !c.email){
+      html += '<p class="mini-note">Aucun contact renseigné pour cette cliente.</p>';
+    }
+
+    html += '<div class="stats-row" style="margin-top:.8rem">'
+      + '<div class="stat-card"><div class="stat-label">Séances faites</div><div class="stat-value">' + nbSeances(id) + '</div>'
+      + '<div class="stat-sub">' + (derniereVenue(id) ? "dernière le " + dateCourte(derniereVenue(id)) : "aucune à ce jour") + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Total réglé</div><div class="stat-value petit">' + argent(totalDepense(id)) + '</div>'
+      + '<div class="stat-sub">' + (prochaineVenue(id) ? "prochain le " + dateCourte(prochaineVenue(id)) : "pas de RDV prévu") + '</div></div>'
+      + '</div>';
+
+    if(c.notes){
+      html += '<div class="card"><div class="stat-label">Notes</div><p style="margin:.35rem 0 0;font-size:.86rem;line-height:1.5">'
+        + echapper(c.notes).replace(/\n/g, "<br>") + '</p></div>';
+    }
+
+    html += '<div class="boutons-duo" style="margin:.8rem 0">'
+      + '<button class="bouton secondaire" type="button" data-modifier="' + echapper(id) + '">Modifier la fiche</button>'
+      + '<button class="bouton" type="button" data-nouveau-rdv="' + echapper(id) + '">Nouveau rendez-vous</button>'
+      + '</div>';
+
+    html += '<h2 class="section">Historique <span class="compteur">' + siens.length + ' rendez-vous</span></h2>';
+    if(!siens.length){
+      html += '<div class="vide">Aucun rendez-vous enregistré.</div>';
+    }else{
+      for(var i = 0; i < siens.length; i++){
+        var r = siens[i];
+        html += ligneRdvHtml(r, false);
+      }
+    }
+
+    $("#corps-fiche").innerHTML = html;
+
+    Array.prototype.forEach.call($("#corps-fiche").querySelectorAll("[data-modifier]"), function(b){
+      b.addEventListener("click", function(){
+        fermerFeuille("sheet-fiche");
+        ouvrirFormCliente(b.getAttribute("data-modifier"));
+      });
+    });
+    Array.prototype.forEach.call($("#corps-fiche").querySelectorAll("[data-nouveau-rdv]"), function(b){
+      b.addEventListener("click", function(){
+        fermerFeuille("sheet-fiche");
+        ouvrirFormRdv(null, b.getAttribute("data-nouveau-rdv"));
+      });
+    });
+    brancherLignesRdv($("#corps-fiche"), function(){ fermerFeuille("sheet-fiche"); });
+
+    ouvrirFeuille("sheet-fiche");
+  }
+
+  /* ================================================================
+     Onglet 2 — Rendez-vous
+     ================================================================ */
+  var moisRdv = moisCourant();
+
+  $("#rdv-mois-prec").addEventListener("click", function(){ moisRdv = decalerMois(moisRdv, -1); afficherRdv(); });
+  $("#rdv-mois-suiv").addEventListener("click", function(){ moisRdv = decalerMois(moisRdv, 1); afficherRdv(); });
+
+  function etiquetteRdv(r){
+    if(r.statut === "annule") return '<span class="etiquette annule">Annulé</span>';
+    if(r.statut === "prevu") return '<span class="etiquette prevu">À venir</span>';
+    if(estImpaye(r)) return '<span class="etiquette impaye">À encaisser</span>';
+    if(regleParCarte(r)) return '<span class="etiquette or">Carte cadeau</span>';
+    return '<span class="etiquette">' + echapper(libelleMode(r.reglement) || "Réglé") + '</span>';
+  }
+
+  function ligneRdvHtml(r, avecCliente){
+    var c = clienteDe(r.clienteId);
+    var titre = avecCliente === false ? (r.prestation || "Séance") : nomComplet(c);
+    var bas = avecCliente === false
+      ? dateCourte(r.date) + (r.heure ? " · " + r.heure : "")
+      : (r.prestation || "Séance") + (r.heure ? " · " + r.heure : "");
+    return '<button class="ligne" type="button" data-rdv="' + echapper(r.id) + '">'
+      + '<span class="pastille">' + echapper(c ? initiales(c) : "?") + '</span>'
+      + '<span class="corps">'
+      + '<span class="nom">' + echapper(titre) + '</span>'
+      + '<span class="detail">' + echapper(bas) + '</span>'
+      + '</span>'
+      + '<span class="droite">'
+      + '<span class="montant">' + (nombre(r.montant) > 0 ? argent(r.montant) : "—") + '</span>'
+      + '<span class="sous">' + etiquetteRdv(r) + '</span>'
+      + '</span>'
+      + '</button>';
+  }
+
+  function brancherLignesRdv(hote, avant){
+    Array.prototype.forEach.call(hote.querySelectorAll("[data-rdv]"), function(b){
+      b.addEventListener("click", function(){
+        if(avant) avant();
+        ouvrirFormRdv(b.getAttribute("data-rdv"));
+      });
+    });
+  }
+
+  function afficherRdv(){
+    $("#rdv-mois-libelle").textContent = libelleMois(moisRdv);
+
+    var duMois = rdvs.filter(function(r){ return cleMois(r.date) === moisRdv; });
+    duMois.sort(function(a, b){
+      var d = (a.date || "").localeCompare(b.date || "");
+      if(d !== 0) return d;
+      return (a.heure || "").localeCompare(b.heure || "");
+    });
+
+    var encaisse = 0, attente = 0, faites = 0, prevus = 0;
+    for(var i = 0; i < duMois.length; i++){
+      var r = duMois[i];
+      if(encaisseSeance(r)){ encaisse += nombre(r.montant); faites++; }
+      else if(regleParCarte(r)){ faites++; }          // réglée par carte : déjà encaissée, ni CA ni attente
+      else if(estImpaye(r)){ attente += nombre(r.montant); faites++; }
+      else if(r.statut === "prevu") prevus++;
+    }
+
+    $("#kpi-rdv-encaisse").textContent = argent(encaisse);
+    $("#kpi-rdv-seances").textContent = faites + " séance" + (faites > 1 ? "s" : "") + " faite" + (faites > 1 ? "s" : "");
+    $("#kpi-rdv-attente").textContent = argent(attente);
+    $("#kpi-rdv-prevus").textContent = prevus > 0 ? (prevus + " rendez-vous à venir") : "aucun rendez-vous à venir";
+
+    var hote = $("#liste-rdv");
+    if(!duMois.length){
+      hote.innerHTML = clientes.length
+        ? '<div class="vide"><strong>Aucun rendez-vous ce mois-ci</strong>Appuie sur le + pour en ajouter un.</div>'
+        : '<div class="vide"><strong>Commence par une cliente</strong>Crée d\'abord une fiche dans l\'onglet Clientes, tu pourras ensuite lui poser un rendez-vous.</div>';
+      return;
+    }
+
+    var html = "", jourPrecedent = "";
+    for(var n = 0; n < duMois.length; n++){
+      var rr = duMois[n];
+      if(rr.date !== jourPrecedent){
+        jourPrecedent = rr.date;
+        html += '<div class="jour-titre">' + echapper(dateLongue(rr.date)) + '</div>';
+      }
+      html += ligneRdvHtml(rr, true);
+    }
+    hote.innerHTML = html;
+    brancherLignesRdv(hote, null);
+  }
+
+  /* ---------- Formulaire rendez-vous ---------- */
+  function remplirSelectClientes(selectionne){
+    var s = $("#r-cliente");
+    var tries = clientes.slice().sort(function(a, b){
+      return nomComplet(a).localeCompare(nomComplet(b), "fr", { sensitivity:"base" });
+    });
+    var html = '<option value="">— choisir une cliente —</option>';
+    for(var i = 0; i < tries.length; i++){
+      html += '<option value="' + echapper(tries[i].id) + '">' + echapper(nomComplet(tries[i])) + '</option>';
+    }
+    s.innerHTML = html;
+    if(selectionne) s.value = selectionne;
+  }
+
+  function remplirDatalistPrestations(){
+    var d = $("#liste-prestations");
+    var html = "";
+    for(var i = 0; i < prestations.length; i++){
+      html += '<option value="' + echapper(prestations[i].nom) + '"></option>';
+    }
+    d.innerHTML = html;
+  }
+
+  function prestationDe(nom){
+    for(var i = 0; i < prestations.length; i++){
+      if(prestations[i].nom === nom) return prestations[i];
+    }
+    return null;
+  }
+
+  $("#r-prestation").addEventListener("change", function(){
+    var p = prestationDe(this.value);
+    if(!p) return;
+    var f = $("#form-rdv");
+    if(!f.duree.value && p.duree) f.duree.value = p.duree;
+    if(!f.montant.value && p.prix) f.montant.value = p.prix;
+  });
+
+  function majAideCadeau(){ $("#aide-cadeau").hidden = ($("#r-reglement").value !== MODE_CADEAU); }
+  $("#r-reglement").addEventListener("change", majAideCadeau);
+
+  function ouvrirFormRdv(id, clienteId){
+    if(!clientes.length){
+      message("#statut-rdv", "", "");
+      demanderConfirmation(
+        "Aucune cliente",
+        "Crée d'abord une fiche cliente : un rendez-vous est toujours rattaché à quelqu'un.",
+        function(){ ouvrirFormCliente(null); },
+        "Créer une fiche"
+      );
+      return;
+    }
+    var f = $("#form-rdv");
+    f.reset();
+    var r = id ? rdvDe(id) : null;
+    $("#titre-rdv").textContent = r ? "Modifier le rendez-vous" : "Nouveau rendez-vous";
+    $("#supprimer-rdv").hidden = !r;
+    remplirSelectClientes(r ? r.clienteId : (clienteId || ""));
+    remplirDatalistPrestations();
+    f.id.value = r ? r.id : "";
+    if(r){
+      f.date.value = r.date || "";
+      f.heure.value = r.heure || "";
+      f.prestation.value = r.prestation || "";
+      f.duree.value = r.duree || "";
+      f.montant.value = (r.montant === 0 || r.montant) ? r.montant : "";
+      f.statut.value = r.statut || "prevu";
+      f.reglement.value = r.reglement || "";
+      f.notes.value = r.notes || "";
+    }else{
+      var defautMois = (moisRdv === moisCourant()) ? isoDuJour() : (moisRdv + "-01");
+      f.date.value = defautMois;
+      f.statut.value = (defautMois <= isoDuJour()) ? "honore" : "prevu";
+    }
+    majAideCadeau();
+    ouvrirFeuille("sheet-rdv");
+  }
+
+  $("#form-rdv").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var f = ev.target;
+    if(!f.clienteId.value){ message("#statut-rdv", "Choisis une cliente.", "ko"); return; }
+    if(!f.date.value){ message("#statut-rdv", "La date est obligatoire.", "ko"); return; }
+    if(!f.prestation.value.trim()){ message("#statut-rdv", "Indique la prestation.", "ko"); return; }
+
+    var donnees = {
+      clienteId: f.clienteId.value,
+      date: f.date.value,
+      heure: f.heure.value,
+      prestation: f.prestation.value.trim(),
+      duree: f.duree.value ? nombre(f.duree.value) : 0,
+      montant: f.montant.value ? arrondi(nombre(f.montant.value)) : 0,
+      statut: f.statut.value,
+      reglement: f.reglement.value,
+      notes: f.notes.value.trim()
+    };
+
+    var existant = f.id.value ? rdvDe(f.id.value) : null;
+    if(existant) Object.assign(existant, donnees);
+    else { donnees.id = uid(); rdvs.push(donnees); }
+
+    sauverRdv();
+    moisRdv = cleMois(donnees.date);
+    fermerFeuille("sheet-rdv");
+    toutAfficher();
+  });
+
+  $("#supprimer-rdv").addEventListener("click", function(){
+    var id = $("#form-rdv").id.value;
+    var r = rdvDe(id);
+    if(!r) return;
+    demanderConfirmation(
+      "Supprimer ce rendez-vous ?",
+      dateCourte(r.date) + " · " + (r.prestation || "séance") + " · " + argent(r.montant) + ". C'est définitif.",
+      function(){
+        rdvs = rdvs.filter(function(x){ return x.id !== id; });
+        sauverRdv();
+        fermerFeuille("sheet-rdv");
+        toutAfficher();
+      },
+      "Supprimer"
+    );
+  });
+
+  /* ================================================================
+     Ventes de cartes cadeaux
+     ================================================================ */
+  function ouvrirFormCarte(id){
+    var f = $("#form-carte");
+    f.reset();
+    var v = id ? carteDe(id) : null;
+    $("#titre-carte").textContent = v ? "Modifier la vente" : "Vendre une carte cadeau";
+    $("#supprimer-carte").hidden = !v;
+    f.id.value = v ? v.id : "";
+    if(v){
+      f.date.value = v.date || "";
+      f.montant.value = (v.montant === 0 || v.montant) ? v.montant : "";
+      f.reglement.value = v.reglement || "especes";
+      f.beneficiaire.value = v.beneficiaire || "";
+      f.notes.value = v.notes || "";
+    }else{
+      f.date.value = (moisRevenus === moisCourant()) ? isoDuJour() : (moisRevenus + "-01");
+      f.reglement.value = "especes";
+    }
+    ouvrirFeuille("sheet-carte");
+  }
+
+  $("#form-carte").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var f = ev.target;
+    if(!f.date.value){ message("#statut-carte", "Indique la date de vente.", "ko"); return; }
+    var montant = arrondi(nombre(f.montant.value));
+    if(montant <= 0){ message("#statut-carte", "Indique le montant de la carte.", "ko"); return; }
+    var donnees = {
+      date: f.date.value,
+      montant: montant,
+      reglement: f.reglement.value,
+      beneficiaire: f.beneficiaire.value.trim(),
+      notes: f.notes.value.trim()
+    };
+    var existant = f.id.value ? carteDe(f.id.value) : null;
+    if(existant) Object.assign(existant, donnees);
+    else { donnees.id = uid(); donnees.creeLe = isoDuJour(); cartes.push(donnees); }
+    sauverCartes();
+    moisRevenus = cleMois(donnees.date);
+    fermerFeuille("sheet-carte");
+    toutAfficher();
+  });
+
+  $("#supprimer-carte").addEventListener("click", function(){
+    var id = $("#form-carte").id.value;
+    var v = carteDe(id);
+    if(!v) return;
+    demanderConfirmation(
+      "Supprimer cette vente de carte ?",
+      dateCourte(v.date) + " · " + argent(v.montant) + ". Elle sera retirée du chiffre d'affaires. C'est définitif.",
+      function(){
+        cartes = cartes.filter(function(x){ return x.id !== id; });
+        sauverCartes();
+        fermerFeuille("sheet-carte");
+        toutAfficher();
+      },
+      "Supprimer"
+    );
+  });
+
+  /* ================================================================
+     Dépenses (loyer, produits… — suivi du bénéfice réel)
+     ================================================================ */
+  function remplirDatalistCategories(){
+    var d = $("#liste-categories");
+    var cats = categoriesConnues();
+    var html = "";
+    for(var i = 0; i < cats.length; i++) html += '<option value="' + echapper(cats[i]) + '"></option>';
+    d.innerHTML = html;
+  }
+
+  function ouvrirFormDepense(id){
+    var f = $("#form-depense");
+    f.reset();
+    remplirDatalistCategories();
+    var d = id ? depenseDe(id) : null;
+    $("#titre-depense").textContent = d ? "Modifier la dépense" : "Nouvelle dépense";
+    $("#supprimer-depense").hidden = !d;
+    f.id.value = d ? d.id : "";
+    if(d){
+      f.date.value = d.date || "";
+      f.montant.value = (d.montant === 0 || d.montant) ? d.montant : "";
+      f.categorie.value = d.categorie || "";
+      f.libelle.value = d.libelle || "";
+      f.notes.value = d.notes || "";
+    }else{
+      f.date.value = (moisRevenus === moisCourant()) ? isoDuJour() : (moisRevenus + "-01");
+    }
+    ouvrirFeuille("sheet-depense");
+  }
+
+  $("#form-depense").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var f = ev.target;
+    if(!f.date.value){ message("#statut-depense", "Indique la date.", "ko"); return; }
+    var montant = arrondi(nombre(f.montant.value));
+    if(montant <= 0){ message("#statut-depense", "Indique le montant de la dépense.", "ko"); return; }
+    if(!f.categorie.value.trim()){ message("#statut-depense", "Choisis un poste de dépense.", "ko"); return; }
+    var donnees = {
+      date: f.date.value,
+      montant: montant,
+      categorie: f.categorie.value.trim(),
+      libelle: f.libelle.value.trim(),
+      notes: f.notes.value.trim()
+    };
+    var existant = f.id.value ? depenseDe(f.id.value) : null;
+    if(existant) Object.assign(existant, donnees);
+    else { donnees.id = uid(); donnees.creeLe = isoDuJour(); depenses.push(donnees); }
+    sauverDepenses();
+    moisRevenus = cleMois(donnees.date);
+    fermerFeuille("sheet-depense");
+    toutAfficher();
+  });
+
+  $("#supprimer-depense").addEventListener("click", function(){
+    var id = $("#form-depense").id.value;
+    var d = depenseDe(id);
+    if(!d) return;
+    demanderConfirmation(
+      "Supprimer cette dépense ?",
+      dateCourte(d.date) + " · " + echapper(d.categorie || "") + " · " + argent(d.montant) + ". C'est définitif.",
+      function(){
+        depenses = depenses.filter(function(x){ return x.id !== id; });
+        sauverDepenses();
+        fermerFeuille("sheet-depense");
+        toutAfficher();
+      },
+      "Supprimer"
+    );
+  });
+
+  /* ================================================================
+     Mail groupé (chaque cliente en copie cachée)
+     ================================================================ */
+  function clientesAvecMail(){
+    return clientes.filter(function(c){ return (c.email || "").trim(); });
+  }
+
+  function ouvrirMailGroupe(){
+    var avec = clientesAvecMail();
+    var sans = clientes.length - avec.length;
+    $("#mail-compteur").textContent = avec.length + " avec mail";
+    $("#mail-sans-mail").textContent = sans > 0
+      ? (sans + " cliente" + (sans > 1 ? "s" : "") + " sans adresse mail ne " + (sans > 1 ? "seront" : "sera") + " pas incluse" + (sans > 1 ? "s" : "") + ".")
+      : "";
+    $("#mail-panneau-copie").hidden = true;
+    message("#statut-mail", "", "");
+
+    if(!avec.length){
+      $("#mail-liste").innerHTML = '<div class="vide">Aucune cliente n\'a d\'adresse mail enregistrée. Ajoute un mail dans une fiche pour l\'inclure ici.</div>';
+    }else{
+      avec.sort(function(a, b){ return nomComplet(a).localeCompare(nomComplet(b), "fr", { sensitivity:"base" }); });
+      var html = '<div class="card" style="padding:.3rem .6rem">';
+      html += '<label class="case" style="border:0;background:none;padding:.5rem .2rem"><input type="checkbox" id="mail-tout" checked><span class="txt"><b>Tout sélectionner</b></span></label>';
+      for(var i = 0; i < avec.length; i++){
+        var c = avec[i];
+        html += '<label class="case" style="border:0;border-top:1px solid var(--border);background:none;padding:.5rem .2rem">'
+          + '<input type="checkbox" class="mail-coche" value="' + echapper(c.email.trim()) + '" checked>'
+          + '<span class="txt"><b>' + echapper(nomComplet(c)) + '</b><span>' + echapper(c.email.trim()) + '</span></span></label>';
+      }
+      html += '</div>';
+      $("#mail-liste").innerHTML = html;
+      $("#mail-tout").addEventListener("change", function(){
+        var etat = this.checked;
+        Array.prototype.forEach.call(document.querySelectorAll(".mail-coche"), function(x){ x.checked = etat; });
+      });
+    }
+    ouvrirFeuille("sheet-mail");
+  }
+  $("#btn-mail-groupe").addEventListener("click", ouvrirMailGroupe);
+
+  function adressesCochees(){
+    return Array.prototype.map.call(document.querySelectorAll(".mail-coche:checked"), function(x){ return x.value; });
+  }
+
+  $("#btn-ouvrir-mail").addEventListener("click", function(){
+    var dest = adressesCochees();
+    if(!dest.length){ message("#statut-mail", "Coche au moins une cliente.", "ko"); return; }
+    var objet = $("#m-objet").value;
+    var corps = $("#m-corps").value;
+    var moi = (reglages.email || "").trim();
+    // Destinataires en Cci ; l'expéditeur (toi) en destinataire visible s'il est connu.
+    var lien = "mailto:" + encodeURIComponent(moi)
+      + "?bcc=" + encodeURIComponent(dest.join(","))
+      + "&subject=" + encodeURIComponent(objet)
+      + "&body=" + encodeURIComponent(corps);
+    // Au-delà d'environ 1800 caractères, beaucoup d'applis mail tronquent le lien.
+    if(lien.length > 1800){
+      message("#statut-mail", "Trop de destinataires pour l'ouverture directe : utilise « Copier les adresses » puis colle-les dans le champ Cci de ton mail.", "ko");
+      revelerCopie("adresses", dest.join(", "));
+      return;
+    }
+    message("#statut-mail", dest.length + " destinataire(s) en copie cachée. Ton brouillon s'ouvre : rien n'est envoyé avant que tu appuies sur Envoyer.", "ok");
+    window.location.href = lien;
+  });
+
+  function revelerCopie(quoi, contenu){
+    $("#mail-zone-label").textContent = (quoi === "adresses")
+      ? "Adresses à coller dans le champ Cci (copie cachée)"
+      : "Message à coller";
+    $("#mail-panneau-copie").hidden = false;
+    var zone = $("#mail-zone-copie");
+    zone.value = contenu;
+    zone.focus();
+    zone.select();
+  }
+
+  $("#btn-copier-adresses").addEventListener("click", function(){
+    var dest = adressesCochees();
+    if(!dest.length){ message("#statut-mail", "Coche au moins une cliente.", "ko"); return; }
+    var texte = dest.join(", ");
+    copierTexte(texte, "#statut-mail", "Adresses copiées : colle-les dans le champ Cci (copie cachée) de ton mail.", function(){ revelerCopie("adresses", texte); });
+  });
+
+  $("#btn-copier-message").addEventListener("click", function(){
+    var texte = $("#m-corps").value;
+    if(!texte.trim()){ message("#statut-mail", "Écris d'abord ton message.", "ko"); return; }
+    copierTexte(texte, "#statut-mail", "Message copié.", function(){ revelerCopie("message", texte); });
+  });
+
+  /* Copie presse-papier avec repli : si l'API échoue, on affiche la zone à
+     copier à la main (le cadre artifact bloque parfois le presse-papier). */
+  function copierTexte(texte, cibleStatut, messageOk, siEchec){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texte).then(
+        function(){ message(cibleStatut, messageOk, "ok"); },
+        function(){ if(siEchec) siEchec(); message(cibleStatut, "Copie automatique impossible : sélectionne le texte ci-dessous et copie-le à la main.", "ko"); }
+      );
+      return;
+    }
+    if(siEchec) siEchec();
+    var ok = false;
+    try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+    message(cibleStatut, ok ? messageOk : "Sélectionne le texte ci-dessous et copie-le à la main.", ok ? "ok" : "ko");
+  }
+
+  /* ================================================================
+     Onglet 3 — Revenus et provision URSSAF
+     ================================================================ */
+  var moisRevenus = moisCourant();
+
+  $("#rev-mois-prec").addEventListener("click", function(){ moisRevenus = decalerMois(moisRevenus, -1); afficherRevenus(); });
+  $("#rev-mois-suiv").addEventListener("click", function(){ moisRevenus = decalerMois(moisRevenus, 1); afficherRevenus(); });
+
+  function provisionDuMois(cle){
+    return provisions[cle] || null;
+  }
+  function provisionCalculee(cle){
+    return arrondi(caDuMois(cle) * (nombre(reglages.taux) / 100));
+  }
+  function totalMisDeCote(){
+    var t = 0;
+    for(var cle in provisions){
+      if(Object.prototype.hasOwnProperty.call(provisions, cle)) t += nombre(provisions[cle].montant);
+    }
+    return arrondi(t);
+  }
+  function totalPaye(){
+    var t = 0;
+    for(var i = 0; i < paiements.length; i++) t += nombre(paiements[i].montant);
+    return arrondi(t);
+  }
+  function cagnotte(){ return arrondi(totalMisDeCote() - totalPaye()); }
+
+  function afficherRevenus(){
+    $("#rev-mois-libelle").textContent = libelleMois(moisRevenus);
+
+    var b = bilan(estDuMois(moisRevenus));
+    var ca = b.ca;
+    var parMode = b.parMode;
+    var panier = b.nbSeancesEncaissees ? arrondi(b.caSeances / b.nbSeancesEncaissees) : 0;
+
+    /* --- Bloc du mois --- */
+    var sousEncaisse = b.nbSeancesEncaissees + " séance" + (b.nbSeancesEncaissees > 1 ? "s" : "") + " réglée" + (b.nbSeancesEncaissees > 1 ? "s" : "");
+    if(b.caCartes > 0) sousEncaisse += " + " + argent(b.caCartes) + " de cartes";
+    $("#bloc-mois").innerHTML =
+      '<div class="stats-row">'
+      + '<div class="stat-card"><div class="stat-label">Encaissé</div><div class="stat-value">' + argent(ca) + '</div>'
+      + '<div class="stat-sub">' + sousEncaisse + '</div></div>'
+      + '<div class="stat-card"><div class="stat-label">Panier moyen</div><div class="stat-value petit">' + argent(panier) + '</div>'
+      + '<div class="stat-sub">' + (b.attente > 0 ? argent(b.attente) + " en attente" : "rien en attente") + '</div></div>'
+      + '</div>';
+
+    /* --- Bloc URSSAF --- */
+    var calcule = provisionCalculee(moisRevenus);
+    var prov = provisionDuMois(moisRevenus);
+    var estMis = !!prov;
+    var montantMis = prov ? nombre(prov.montant) : calcule;
+
+    var htmlU = '<div class="card">'
+      + '<div class="rangee"><span class="lib">Chiffre d\'affaires du mois</span><span class="val">' + argent(ca) + '</span></div>'
+      + '<div class="rangee"><span class="lib">Taux appliqué</span><span class="val">' + String(nombre(reglages.taux)).replace(".", ",") + ' %</span></div>'
+      + '<div class="rangee"><span class="lib">À provisionner</span><span class="val gros">' + argent(calcule) + '</span></div>'
+      + '</div>';
+
+    htmlU += '<label class="case" for="case-provision">'
+      + '<input type="checkbox" id="case-provision"' + (estMis ? " checked" : "") + '>'
+      + '<span class="txt"><b>J\'ai mis cette somme de côté</b>'
+      + '<span>' + (estMis ? ("Coché le " + dateCourte(prov.le)) : "Coche la case une fois l'argent viré sur ton compte de côté.") + '</span></span>'
+      + '</label>';
+
+    htmlU += '<div class="champ" style="margin-top:.6rem"' + (estMis ? "" : ' hidden') + ' id="champ-montant-provision">'
+      + '<label for="montant-provision">Montant réellement mis de côté (€)</label>'
+      + '<input id="montant-provision" type="number" min="0" step="0.01" inputmode="decimal" value="' + montantMis + '">'
+      + '</div>';
+
+    var cag = cagnotte();
+    htmlU += '<div class="card" style="margin-top:.7rem">'
+      + '<div class="rangee"><span class="lib">Total mis de côté</span><span class="val">' + argent(totalMisDeCote()) + '</span></div>'
+      + '<div class="rangee"><span class="lib">Déjà versé à l\'URSSAF</span><span class="val">' + argent(totalPaye()) + '</span></div>'
+      + '<div class="rangee"><span class="lib">Cagnotte disponible</span><span class="val gros">' + argent(cag) + '</span></div>'
+      + '</div>';
+
+    // Le montant reste saisissable : l'appel de l'URSSAF ne tombe jamais
+    // exactement sur l'estimation, et une declaration trimestrielle ne
+    // correspond pas forcement a tout ce qui est dans la cagnotte.
+    htmlU += '<div class="card" style="margin-top:.7rem">'
+      + '<div class="stat-label">Enregistrer un versement</div>'
+      + '<div class="duo" style="margin-top:.55rem">'
+      + '<div class="champ" style="margin-bottom:0"><label for="paiement-montant">Montant versé (€)</label>'
+      + '<input id="paiement-montant" type="number" min="0" step="0.01" inputmode="decimal" value="' + (cag > 0 ? cag : "") + '"></div>'
+      + '<div class="champ" style="margin-bottom:0"><label for="paiement-date">Payé le</label>'
+      + '<input id="paiement-date" type="date" value="' + isoDuJour() + '"></div>'
+      + '</div>'
+      + '<button class="bouton secondaire" type="button" id="btn-paiement" style="margin-top:.6rem">J\'ai payé l\'URSSAF</button>'
+      + '<div class="statut" id="statut-paiement"></div>'
+      + '</div>';
+
+    if(paiements.length){
+      var recents = paiements.slice().sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }).slice(0, 4);
+      htmlU += '<div class="card" style="margin-top:.7rem"><div class="stat-label">Derniers versements</div>';
+      for(var p = 0; p < recents.length; p++){
+        htmlU += '<div class="rangee"><span class="lib">' + echapper(dateCourte(recents[p].date)) + '</span>'
+          + '<span class="val">' + argent(recents[p].montant)
+          + ' <button type="button" class="fermer" data-suppr-paiement="' + echapper(recents[p].id) + '" title="Supprimer" style="font-size:1rem">&times;</button>'
+          + '</span></div>';
+      }
+      htmlU += '</div>';
+    }
+
+    htmlU += '<p class="mini-note">Déclaration ' + (reglages.periodicite === "mensuelle" ? "mensuelle" : "trimestrielle")
+      + '. Ce calcul est une aide à la mise de côté, pas une déclaration : le montant officiel reste celui de ton espace urssaf.fr.</p>';
+
+    $("#bloc-urssaf").innerHTML = htmlU;
+
+    $("#case-provision").addEventListener("change", function(){
+      if(this.checked){
+        provisions[moisRevenus] = { montant: arrondi(nombre($("#montant-provision").value) || calcule), le: isoDuJour() };
+      }else{
+        delete provisions[moisRevenus];
+      }
+      sauverProvisions();
+      afficherRevenus();
+    });
+    $("#montant-provision").addEventListener("change", function(){
+      if(provisions[moisRevenus]){
+        provisions[moisRevenus].montant = arrondi(nombre(this.value));
+        sauverProvisions();
+        afficherRevenus();
+      }
+    });
+    $("#btn-paiement").addEventListener("click", function(){
+      var m = arrondi(nombre($("#paiement-montant").value));
+      var quand = $("#paiement-date").value || isoDuJour();
+      if(m <= 0){ message("#statut-paiement", "Indique le montant réellement versé.", "ko"); return; }
+      var reste = arrondi(cagnotte() - m);
+      demanderConfirmation(
+        "Versement à l'URSSAF",
+        argent(m) + " le " + dateCourte(quand) + ". Il restera " + argent(reste) + " dans la cagnotte"
+          + (reste < 0 ? " — un montant négatif veut dire que tu as versé plus que ce qui était mis de côté." : ".")
+          + " En cas d'erreur, ce versement se supprime juste en dessous.",
+        function(){
+          paiements.push({ id: uid(), date: quand, montant: m });
+          sauverPaiements();
+          afficherRevenus();
+        },
+        "Enregistrer"
+      );
+    });
+    Array.prototype.forEach.call($("#bloc-urssaf").querySelectorAll("[data-suppr-paiement]"), function(b){
+      b.addEventListener("click", function(){
+        var pid = b.getAttribute("data-suppr-paiement");
+        paiements = paiements.filter(function(x){ return x.id !== pid; });
+        sauverPaiements();
+        afficherRevenus();
+      });
+    });
+
+    /* --- Dépenses du mois --- */
+    var depMois = depenses.filter(function(d){ return cleMois(d.date) === moisRevenus; })
+      .sort(function(a, d2){ return (d2.date || "").localeCompare(a.date || ""); });
+    var dm = totalDepenses(estDuMois(moisRevenus));
+    var htmlD = '<button class="bouton" type="button" id="btn-ajouter-depense">+ Ajouter une dépense</button>';
+    if(depMois.length){
+      htmlD += '<div class="card" style="margin-top:.6rem">';
+      for(var di = 0; di < depMois.length; di++){
+        var dep = depMois[di];
+        var libD = dep.libelle ? (" · " + dep.libelle) : "";
+        htmlD += '<div class="rangee">'
+          + '<span class="lib">' + echapper(dateCourte(dep.date)) + ' · ' + echapper(dep.categorie || "Autre") + echapper(libD) + '</span>'
+          + '<span class="val">' + argent(dep.montant)
+          + ' <button type="button" class="fermer" data-modif-depense="' + echapper(dep.id) + '" title="Modifier" style="font-size:1rem">✎</button>'
+          + '</span></div>';
+      }
+      htmlD += '<div class="rangee"><span class="lib">Total dépensé ce mois</span><span class="val gros">' + argent(dm.total) + '</span></div>';
+      htmlD += '</div>';
+      // Répartition par poste
+      var cats = Object.keys(dm.parCat).sort(function(a, d2){ return dm.parCat[d2] - dm.parCat[a]; });
+      if(cats.length > 1){
+        var maxCat = dm.parCat[cats[0]] || 1;
+        htmlD += '<div class="card" style="margin-top:.6rem">';
+        for(var ci = 0; ci < cats.length; ci++){
+          var pctc = Math.max(3, Math.round((dm.parCat[cats[ci]] / maxCat) * 100));
+          htmlD += '<div class="barre-ligne">'
+            + '<span class="lib">' + echapper(cats[ci]) + '</span>'
+            + '<span class="barre-piste"><span class="barre-jauge" style="width:' + pctc + '%"></span></span>'
+            + '<span class="val">' + argent(dm.parCat[cats[ci]]) + '</span></div>';
+        }
+        htmlD += '</div>';
+      }
+    }else{
+      htmlD += '<p class="mini-note" style="margin-top:.5rem">Aucune dépense enregistrée ce mois-ci (loyer, produits, matériel…).</p>';
+    }
+    $("#bloc-depenses").innerHTML = htmlD;
+    $("#btn-ajouter-depense").addEventListener("click", function(){ ouvrirFormDepense(null); });
+    Array.prototype.forEach.call($("#bloc-depenses").querySelectorAll("[data-modif-depense]"), function(bt){
+      bt.addEventListener("click", function(){ ouvrirFormDepense(bt.getAttribute("data-modif-depense")); });
+    });
+
+    /* --- Ce qu'il te reste (estimation) --- */
+    var chargesMois = provisionCalculee(moisRevenus);       // taux × CA (comme « à provisionner »)
+    var reste = arrondi(ca - dm.total - chargesMois);
+    $("#bloc-resultat").innerHTML = '<div class="card">'
+      + '<div class="rangee"><span class="lib">Encaissé</span><span class="val">' + argent(ca) + '</span></div>'
+      + '<div class="rangee"><span class="lib">− Dépenses</span><span class="val">' + argent(dm.total) + '</span></div>'
+      + '<div class="rangee"><span class="lib">− Charges URSSAF estimées</span><span class="val">' + argent(chargesMois) + '</span></div>'
+      + '<div class="rangee"><span class="lib">= Ce qu\'il te reste</span><span class="val gros">' + argent(reste) + '</span></div>'
+      + '</div>'
+      + '<p class="mini-note">Estimation de ton bénéfice réel. Les dépenses ne réduisent pas les charges URSSAF (calculées sur le chiffre d\'affaires brut) : elles sont retirées ici seulement pour voir ce qui te reste vraiment.</p>';
+
+    /* --- Modes de règlement --- */
+    var cles = Object.keys(parMode);
+    if(!cles.length){
+      $("#bloc-reglements").innerHTML = '<p class="mini-note" style="margin:0">Aucun encaissement ce mois-ci.</p>';
+    }else{
+      cles.sort(function(a, b){ return parMode[b] - parMode[a]; });
+      var maxi = parMode[cles[0]] || 1;
+      var htmlR = "";
+      for(var q = 0; q < cles.length; q++){
+        var pct = Math.max(3, Math.round((parMode[cles[q]] / maxi) * 100));
+        htmlR += '<div class="barre-ligne">'
+          + '<span class="lib">' + echapper(MODES[cles[q]] || cles[q]) + '</span>'
+          + '<span class="barre-piste"><span class="barre-jauge" style="width:' + pct + '%"></span></span>'
+          + '<span class="val">' + argent(parMode[cles[q]]) + '</span>'
+          + '</div>';
+      }
+      if(b.cadeauUtilise > 0){
+        htmlR += '<p class="mini-note" style="margin-top:.5rem">Dont ' + argent(b.cadeauUtilise) + ' de séances réglées par carte cadeau, déjà encaissées à la vente et donc hors de ce total.</p>';
+      }
+      $("#bloc-reglements").innerHTML = htmlR;
+    }
+
+    /* --- Cartes cadeaux vendues ce mois --- */
+    var cartesMois = cartes.filter(function(v){ return cleMois(v.date) === moisRevenus; })
+      .sort(function(a, b2){ return (b2.date || "").localeCompare(a.date || ""); });
+    var htmlC = '<button class="bouton" type="button" id="btn-vendre-carte">+ Vendre une carte cadeau</button>';
+    if(cartesMois.length){
+      htmlC += '<div class="card" style="margin-top:.6rem">';
+      for(var vc = 0; vc < cartesMois.length; vc++){
+        var v = cartesMois[vc];
+        var pour = v.beneficiaire ? (" · " + v.beneficiaire) : (v.clienteId && clienteDe(v.clienteId) ? (" · " + nomComplet(clienteDe(v.clienteId))) : "");
+        htmlC += '<div class="rangee">'
+          + '<span class="lib">' + echapper(dateCourte(v.date)) + ' · ' + echapper(libelleMode(v.reglement) || "réglée") + echapper(pour) + '</span>'
+          + '<span class="val">' + argent(v.montant)
+          + ' <button type="button" class="fermer" data-modif-carte="' + echapper(v.id) + '" title="Modifier" style="font-size:1rem">✎</button>'
+          + '</span></div>';
+      }
+      htmlC += '<div class="rangee"><span class="lib">Total vendu ce mois</span><span class="val gros">' + argent(b.caCartes) + '</span></div>';
+      htmlC += '</div>';
+    }else{
+      htmlC += '<p class="mini-note" style="margin-top:.5rem">Aucune carte cadeau vendue ce mois-ci. La vente compte dans le chiffre d\'affaires du jour où tu l\'encaisses ; la séance offerte, plus tard, ne sera pas recomptée.</p>';
+    }
+    $("#bloc-cartes").innerHTML = htmlC;
+    $("#btn-vendre-carte").addEventListener("click", function(){ ouvrirFormCarte(null); });
+    Array.prototype.forEach.call($("#bloc-cartes").querySelectorAll("[data-modif-carte]"), function(bt){
+      bt.addEventListener("click", function(){ ouvrirFormCarte(bt.getAttribute("data-modif-carte")); });
+    });
+
+    /* --- Histogramme 12 mois --- */
+    var serie = [];
+    for(var m = 11; m >= 0; m--){
+      var cle = decalerMois(moisRevenus, -m);
+      serie.push({ cle: cle, valeur: caDuMois(cle) });
+    }
+    var maxSerie = 0;
+    for(var s = 0; s < serie.length; s++) if(serie[s].valeur > maxSerie) maxSerie = serie[s].valeur;
+    var htmlH = '<div class="histo">';
+    for(var h = 0; h < serie.length; h++){
+      var haut = maxSerie > 0 ? Math.max(2, Math.round((serie[h].valeur / maxSerie) * 74)) : 2;
+      htmlH += '<div class="colonne' + (serie[h].cle === moisRevenus ? " courant" : "") + '" title="'
+        + echapper(libelleMois(serie[h].cle) + " : " + argent(serie[h].valeur)) + '">'
+        + '<span class="tige" style="height:' + haut + 'px"></span>'
+        + '<span class="mois">' + echapper(libelleMoisCourt(serie[h].cle)) + '</span>'
+        + '</div>';
+    }
+    htmlH += '</div>';
+    htmlH += '<p class="mini-note" style="margin-top:.4rem">Le plus haut mois affiché : ' + argent(maxSerie) + '.</p>';
+    $("#bloc-histo").innerHTML = htmlH;
+
+    /* --- Année --- */
+    var annee = moisRevenus.slice(0, 4);
+    $("#annee-libelle").textContent = annee;
+    var caAnnee = caDeLAnnee(annee);
+    var plafond = nombre(reglages.plafond) || 0;
+    var pctPlafond = plafond > 0 ? Math.min(100, Math.round((caAnnee / plafond) * 100)) : 0;
+    var chargesAnnee = arrondi(caAnnee * (nombre(reglages.taux) / 100));
+
+    var seancesAnnee = 0;
+    for(var t = 0; t < rdvs.length; t++){
+      if(String(rdvs[t].date).slice(0,4) === annee && rdvs[t].statut === "honore") seancesAnnee++;
+    }
+    var depAnnee = totalDepenses(estDeLAnnee(annee)).total;
+
+    var htmlA = ''
+      + '<div class="rangee"><span class="lib">Encaissé sur l\'année</span><span class="val gros">' + argent(caAnnee) + '</span></div>'
+      + '<div class="rangee"><span class="lib">Séances réalisées</span><span class="val">' + seancesAnnee + '</span></div>'
+      + '<div class="rangee"><span class="lib">Dépenses</span><span class="val">' + argent(depAnnee) + '</span></div>'
+      + '<div class="rangee"><span class="lib">Charges URSSAF estimées</span><span class="val">' + argent(chargesAnnee) + '</span></div>'
+      + '<div class="rangee"><span class="lib">Ce qu\'il te reste (estimé)</span><span class="val gros">' + argent(arrondi(caAnnee - depAnnee - chargesAnnee)) + '</span></div>';
+    if(plafond > 0){
+      htmlA += '<div style="margin-top:.7rem">'
+        + '<div class="barre-ligne"><span class="lib">Plafond micro</span>'
+        + '<span class="barre-piste"><span class="barre-jauge" style="width:' + Math.max(2, pctPlafond) + '%"></span></span>'
+        + '<span class="val">' + pctPlafond + ' %</span></div>'
+        + '<p class="mini-note" style="margin-top:.2rem">' + argent(caAnnee) + ' sur ' + argent(plafond) + '. Plafond à vérifier sur urssaf.fr, il évolue.</p>'
+        + '</div>';
+    }
+    $("#bloc-annee").innerHTML = htmlA;
+  }
+
+  /* ================================================================
+     Réglages
+     ================================================================ */
+  $("#btn-reglages").addEventListener("click", function(){
+    var f = $("#form-reglages");
+    f.cabinet.value = reglages.cabinet || "";
+    f.email.value = reglages.email || "";
+    f.taux.value = reglages.taux;
+    f.plafond.value = reglages.plafond;
+    f.periodicite.value = reglages.periodicite || "trimestrielle";
+    $("#g-frequence").value = String(reglages.frequenceRappel === undefined ? 14 : reglages.frequenceRappel);
+    afficherPrestationsReglages();
+    afficherCompteurs();
+    $("#version-app").textContent = "Cahier clientèle · version " + VERSION;
+    ouvrirFeuille("sheet-reglages");
+  });
+
+  $("#form-reglages").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var f = ev.target;
+    reglages.cabinet = f.cabinet.value.trim() || REGLAGES_DEFAUT.cabinet;
+    reglages.email = f.email.value.trim();
+    reglages.taux = nombre(f.taux.value);
+    reglages.plafond = nombre(f.plafond.value);
+    reglages.periodicite = f.periodicite.value;
+    sauverReglages();
+    $("#nom-cabinet").textContent = reglages.cabinet;
+    message("#statut-reglages", "Réglages enregistrés.", "ok");
+    afficherRevenus();
+  });
+
+  $("#g-frequence").addEventListener("change", function(){
+    reglages.frequenceRappel = nombre(this.value);
+    sauverReglages();
+    afficherRappel();
+  });
+
+  function afficherPrestationsReglages(){
+    var hote = $("#liste-prestations-reglages");
+    if(!prestations.length){
+      hote.innerHTML = '<p class="mini-note" style="margin:0">Aucune prestation.</p>';
+      return;
+    }
+    var html = '<div class="card">';
+    for(var i = 0; i < prestations.length; i++){
+      var p = prestations[i];
+      html += '<div class="rangee">'
+        + '<span class="lib">' + echapper(p.nom) + (p.duree ? ' <span class="nowrap">· ' + p.duree + ' min</span>' : "") + '</span>'
+        + '<span class="val">' + argent(p.prix)
+        + ' <button type="button" class="fermer" data-suppr-presta="' + i + '" title="Retirer" style="font-size:1rem">&times;</button>'
+        + '</span></div>';
+    }
+    html += '</div>';
+    hote.innerHTML = html;
+    Array.prototype.forEach.call(hote.querySelectorAll("[data-suppr-presta]"), function(b){
+      b.addEventListener("click", function(){
+        prestations.splice(Number(b.getAttribute("data-suppr-presta")), 1);
+        sauverPrestations();
+        afficherPrestationsReglages();
+        remplirDatalistPrestations();
+      });
+    });
+  }
+
+  $("#form-prestation").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var f = ev.target;
+    var nom = f.nom.value.trim();
+    if(!nom){ message("#statut-prestation", "Donne un nom à la prestation.", "ko"); return; }
+    prestations.push({ nom: nom, duree: nombre(f.duree.value), prix: arrondi(nombre(f.prix.value)) });
+    sauverPrestations();
+    f.reset();
+    afficherPrestationsReglages();
+    remplirDatalistPrestations();
+    message("#statut-prestation", "Prestation ajoutée.", "ok");
+  });
+
+  function afficherCompteurs(){
+    $("#cpt-clientes").textContent = clientes.length;
+    $("#cpt-rdv").textContent = rdvs.length + (cartes.length ? (" + " + cartes.length + " carte" + (cartes.length > 1 ? "s" : "")) : "");
+    $("#cpt-depenses").textContent = depenses.length;
+    var info = lire(K_SAUVEGARDE, {});
+    $("#cpt-sauvegarde").textContent = info.le ? dateCourte(info.le) : "jamais";
+  }
+
+  /* ================================================================
+     Sauvegarde / export / restauration
+     ================================================================ */
+  function empreinte(){
+    var s = JSON.stringify({ c: clientes, r: rdvs, k: cartes, d: depenses, p: provisions, v: paiements });
+    var h = 5381;
+    for(var i = 0; i < s.length; i++){ h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; }
+    return String(h);
+  }
+
+  function marquerSauvegarde(){
+    ecrire(K_SAUVEGARDE, { le: isoDuJour(), empreinte: empreinte(), reporteJusquau: "" });
+    afficherCompteurs();
+    afficherRappel();
+  }
+
+  function contenuSauvegarde(){
+    return JSON.stringify({
+      format: "cahier-clientele",
+      version: VERSION,
+      exporteLe: new Date().toISOString(),
+      clientes: clientes,
+      rdvs: rdvs,
+      cartes: cartes,
+      depenses: depenses,
+      prestations: prestations,
+      provisions: provisions,
+      paiements: paiements,
+      reglages: reglages
+    }, null, 1);
+  }
+
+  function celluleCsv(v){
+    var s = String(v === null || v === undefined ? "" : v);
+    if(/[";\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  function nombreCsv(n){ return String(arrondi(n)).replace(".", ","); }
+
+  function contenuCsv(){
+    var lignes = [];
+
+    // Section 1 : séances. La colonne « Compte dans le CA » lève toute
+    // ambiguïté (une séance réglée par carte cadeau est déjà encaissée).
+    lignes.push(["SEANCES"].map(celluleCsv).join(";"));
+    lignes.push(["Date","Heure","Prenom","Nom","Email","Telephone","Prestation","Duree (min)","Montant","Mode de reglement","Compte dans le CA","Statut","Mois","Notes"].map(celluleCsv).join(";"));
+    var tries = rdvs.slice().sort(function(a, b){ return (a.date || "").localeCompare(b.date || ""); });
+    for(var i = 0; i < tries.length; i++){
+      var r = tries[i];
+      var c = clienteDe(r.clienteId) || {};
+      lignes.push([
+        dateCourte(r.date), r.heure || "", c.prenom || "", c.nom || "", c.email || "", c.tel || "",
+        r.prestation || "", r.duree || "", nombreCsv(r.montant),
+        libelleMode(r.reglement) || "", encaisseSeance(r) ? "Oui" : "Non",
+        r.statut === "honore" ? "Faite" : (r.statut === "prevu" ? "A venir" : "Annule"),
+        cleMois(r.date), (r.notes || "").replace(/\n/g, " ")
+      ].map(celluleCsv).join(";"));
+    }
+
+    // Section 2 : ventes de cartes cadeaux (comptent dans le CA à leur date).
+    if(cartes.length){
+      lignes.push("");
+      lignes.push(["CARTES CADEAUX VENDUES"].map(celluleCsv).join(";"));
+      lignes.push(["Date","Montant","Mode de reglement","Pour / de la part de","Mois","Notes"].map(celluleCsv).join(";"));
+      var cartesTri = cartes.slice().sort(function(a, b){ return (a.date || "").localeCompare(b.date || ""); });
+      for(var t = 0; t < cartesTri.length; t++){
+        var v = cartesTri[t];
+        lignes.push([
+          dateCourte(v.date), nombreCsv(v.montant), MODES[v.reglement] || "",
+          v.beneficiaire || "", cleMois(v.date), (v.notes || "").replace(/\n/g, " ")
+        ].map(celluleCsv).join(";"));
+      }
+    }
+
+    // Section 3 : dépenses (elles ne réduisent ni le CA ni les charges URSSAF).
+    if(depenses.length){
+      lignes.push("");
+      lignes.push(["DEPENSES"].map(celluleCsv).join(";"));
+      lignes.push(["Date","Poste","Montant","Libelle","Mois","Notes"].map(celluleCsv).join(";"));
+      var depTri = depenses.slice().sort(function(a, b){ return (a.date || "").localeCompare(b.date || ""); });
+      for(var td = 0; td < depTri.length; td++){
+        var dp = depTri[td];
+        lignes.push([
+          dateCourte(dp.date), dp.categorie || "", nombreCsv(dp.montant),
+          dp.libelle || "", cleMois(dp.date), (dp.notes || "").replace(/\n/g, " ")
+        ].map(celluleCsv).join(";"));
+      }
+    }
+
+    // Section 4 : récapitulatif mensuel (CA séances + cartes, dépenses, reste estimé).
+    lignes.push("");
+    lignes.push(["RECAPITULATIF PAR MOIS"].map(celluleCsv).join(";"));
+    lignes.push(["Mois","CA encaisse","Charges provisionnees (" + String(reglages.taux).replace(".", ",") + " %)","Mis de cote","Depenses","Reste estime"].map(celluleCsv).join(";"));
+    var moisVus = {};
+    for(var j = 0; j < rdvs.length; j++){ var k = cleMois(rdvs[j].date); if(k) moisVus[k] = true; }
+    for(var jc = 0; jc < cartes.length; jc++){ var kc = cleMois(cartes[jc].date); if(kc) moisVus[kc] = true; }
+    for(var jd = 0; jd < depenses.length; jd++){ var kd = cleMois(depenses[jd].date); if(kd) moisVus[kd] = true; }
+    var clesMois = Object.keys(moisVus).sort();
+    for(var m = 0; m < clesMois.length; m++){
+      var ca = caDuMois(clesMois[m]);
+      var charges = ca * (nombre(reglages.taux) / 100);
+      var dep = totalDepenses(estDuMois(clesMois[m])).total;
+      lignes.push([
+        clesMois[m], nombreCsv(ca), nombreCsv(charges),
+        provisions[clesMois[m]] ? nombreCsv(provisions[clesMois[m]].montant) : "0",
+        nombreCsv(dep), nombreCsv(ca - charges - dep)
+      ].map(celluleCsv).join(";"));
+    }
+    return "﻿" + lignes.join("\r\n");
+  }
+
+  function proposerFichier(contenu, nomFichier, typeMime, messageOk){
+    var reussi = false;
+    try{
+      var blob = new Blob([contenu], { type: typeMime });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = nomFichier;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+      reussi = true;
+    }catch(e){ reussi = false; }
+
+    if(reussi){
+      message("#statut-sauvegarde", messageOk, "ok");
+      marquerSauvegarde();
+    }else{
+      message("#statut-sauvegarde", "Le téléchargement est bloqué ici : copie le contenu ci-dessous à la place.", "ko");
+    }
+    // Le panneau de copie reste toujours disponible : sur mobile le
+    // téléchargement peut « réussir » sans que le fichier soit visible.
+    $("#panneau-copie").hidden = false;
+    $("#zone-copie").value = contenu;
+  }
+
+  $("#export-json").addEventListener("click", function(){
+    proposerFichier(contenuSauvegarde(), "cahier-clientele-" + isoDuJour() + ".json",
+      "application/json;charset=utf-8", "Sauvegarde complète enregistrée.");
+  });
+  $("#export-csv").addEventListener("click", function(){
+    proposerFichier(contenuCsv(), "cahier-clientele-" + isoDuJour() + ".csv",
+      "text/csv;charset=utf-8", "Export Excel enregistré.");
+  });
+  $("#btn-copier").addEventListener("click", function(){
+    var zone = $("#zone-copie");
+    zone.select();
+    var ok = false;
+    try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+    if(!ok && navigator.clipboard){
+      navigator.clipboard.writeText(zone.value).then(function(){
+        message("#statut-sauvegarde", "Contenu copié.", "ok"); marquerSauvegarde();
+      }, function(){
+        message("#statut-sauvegarde", "Copie impossible : sélectionne le texte à la main.", "ko");
+      });
+      return;
+    }
+    if(ok){ message("#statut-sauvegarde", "Contenu copié.", "ok"); marquerSauvegarde(); }
+    else message("#statut-sauvegarde", "Copie impossible : sélectionne le texte à la main.", "ko");
+  });
+
+  $("#btn-restaurer").addEventListener("click", function(){
+    var texte = $("#zone-restaurer").value.trim();
+    if(!texte){ message("#statut-restaurer", "Colle d'abord le contenu d'une sauvegarde.", "ko"); return; }
+    var data;
+    try{ data = JSON.parse(texte); }
+    catch(e){ message("#statut-restaurer", "Ce n'est pas une sauvegarde lisible.", "ko"); return; }
+    if(!data || data.format !== "cahier-clientele" || !Array.isArray(data.clientes)){
+      message("#statut-restaurer", "Ce fichier ne vient pas de cette application.", "ko");
+      return;
+    }
+    demanderConfirmation(
+      "Remplacer tout le contenu ?",
+      "La sauvegarde contient " + data.clientes.length + " cliente(s) et "
+        + (Array.isArray(data.rdvs) ? data.rdvs.length : 0) + " rendez-vous. Le contenu actuel sera effacé.",
+      function(){
+        clientes = data.clientes || [];
+        rdvs = Array.isArray(data.rdvs) ? data.rdvs : [];
+        cartes = Array.isArray(data.cartes) ? data.cartes : [];
+        depenses = Array.isArray(data.depenses) ? data.depenses : [];
+        prestations = Array.isArray(data.prestations) && data.prestations.length ? data.prestations : PRESTATIONS_DEFAUT.slice();
+        provisions = data.provisions || {};
+        paiements = Array.isArray(data.paiements) ? data.paiements : [];
+        reglages = Object.assign({}, REGLAGES_DEFAUT, data.reglages || {});
+        sauverClientes(); sauverRdv(); sauverCartes(); sauverDepenses(); sauverPrestations(); sauverProvisions(); sauverPaiements(); sauverReglages();
+        $("#zone-restaurer").value = "";
+        $("#nom-cabinet").textContent = reglages.cabinet;
+        message("#statut-restaurer", "Sauvegarde restaurée.", "ok");
+        toutAfficher();
+        afficherCompteurs();
+      },
+      "Restaurer"
+    );
+  });
+
+  /* ---------- Rappel de sauvegarde ---------- */
+  function joursDepuis(iso){
+    if(!iso) return 9999;
+    var p = iso.split("-");
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    return Math.floor((Date.now() - d.getTime()) / 86400000);
+  }
+
+  function afficherRappel(){
+    var el = $("#rappel-sauvegarde");
+    var freq = nombre(reglages.frequenceRappel === undefined ? 14 : reglages.frequenceRappel);
+
+    if(!stockageOk){
+      el.hidden = false;
+      el.innerHTML = "<b>Attention :</b> ce navigateur refuse d'enregistrer les données "
+        + "(navigation privée ?). Ce que tu saisis sera perdu en fermant l'onglet.";
+      return;
+    }
+    if(!freq || (!clientes.length && !rdvs.length)){ el.hidden = true; return; }
+
+    var info = lire(K_SAUVEGARDE, {});
+    if(info.reporteJusquau && info.reporteJusquau > isoDuJour()){ el.hidden = true; return; }
+    if(info.empreinte === empreinte()){ el.hidden = true; return; }
+    if(info.le && joursDepuis(info.le) < freq){ el.hidden = true; return; }
+
+    el.hidden = false;
+    el.innerHTML = "<b>Pense à sauvegarder.</b> Tes données ne vivent que sur ce téléphone : "
+      + (info.le ? "dernière sauvegarde le " + dateCourte(info.le) + "." : "aucune sauvegarde faite pour l'instant.")
+      + '<span class="actions">'
+      + '<button type="button" class="principal" id="rappel-maintenant">Sauvegarder</button>'
+      + '<button type="button" id="rappel-plus-tard">Plus tard</button>'
+      + '</span>';
+    $("#rappel-maintenant").addEventListener("click", function(){
+      $("#btn-reglages").click();
+      window.setTimeout(function(){ $("#export-json").click(); }, 120);
+    });
+    $("#rappel-plus-tard").addEventListener("click", function(){
+      var d = new Date(); d.setDate(d.getDate() + 2);
+      var info2 = lire(K_SAUVEGARDE, {});
+      info2.reporteJusquau = isoDuJour(d);
+      ecrire(K_SAUVEGARDE, info2);
+      afficherRappel();
+    });
+  }
+
+  /* ================================================================
+     Rapport PDF : aperçu imprimable, puis « Enregistrer en PDF » du
+     navigateur (même principe que Reventes).
+     ================================================================ */
+  var periodeRapportChoisie = false;
+  $("#rapport-periode").addEventListener("change", function(){ periodeRapportChoisie = true; });
+
+  function majuscule(s){ s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function dansPeriode(r, periode){
+    var cle = periode.slice(2);
+    return periode.charAt(0) === "m" ? cleMois(r.date) === cle : String(r.date || "").slice(0, 4) === cle;
+  }
+
+  function libellePeriode(periode){
+    if(!periode) return "";
+    return periode.charAt(0) === "m" ? libelleMois(periode.slice(2)) : "Année " + periode.slice(2);
+  }
+
+  /* Périodes avec de l'activité réalisée (séance faite ou carte vendue) :
+     le rapport porte sur ce qui a eu lieu, pas sur le planning. */
+  function periodesDisponibles(){
+    var mois = {}, annees = {};
+    for(var i = 0; i < rdvs.length; i++){
+      var r = rdvs[i];
+      if(r.statut !== "honore" || !r.date) continue;
+      mois[cleMois(r.date)] = true;
+      annees[String(r.date).slice(0, 4)] = true;
+    }
+    for(var j = 0; j < cartes.length; j++){
+      if(!cartes[j].date) continue;
+      mois[cleMois(cartes[j].date)] = true;
+      annees[String(cartes[j].date).slice(0, 4)] = true;
+    }
+    for(var jd = 0; jd < depenses.length; jd++){
+      if(!depenses[jd].date) continue;
+      mois[cleMois(depenses[jd].date)] = true;
+      annees[String(depenses[jd].date).slice(0, 4)] = true;
+    }
+    var liste = Object.keys(mois).sort().reverse().map(function(k){
+      return { valeur: "m:" + k, libelle: majuscule(libelleMois(k)) };
+    });
+    Object.keys(annees).sort().reverse().forEach(function(a){
+      liste.push({ valeur: "a:" + a, libelle: "Année " + a });
+    });
+    return liste;
+  }
+
+  function remplirPeriodes(){
+    var s = $("#rapport-periode");
+    var choix = s.value;
+    var periodes = periodesDisponibles();
+    if(!periodes.length){
+      s.innerHTML = '<option value="">Aucune séance faite pour l\'instant</option>';
+      s.disabled = true;
+      return;
+    }
+    s.disabled = false;
+    var html = "";
+    for(var i = 0; i < periodes.length; i++){
+      html += '<option value="' + echapper(periodes[i].valeur) + '">' + echapper(periodes[i].libelle) + '</option>';
+    }
+    s.innerHTML = html;
+    var existe = function(v){ return periodes.some(function(p){ return p.valeur === v; }); };
+    // Choix explicite conservé ; sinon le mois affiché dans l'onglet ; sinon le plus récent.
+    if(periodeRapportChoisie && existe(choix)) s.value = choix;
+    else if(existe("m:" + moisRevenus)) s.value = "m:" + moisRevenus;
+  }
+  // La liste suit le mois affiché dans l'onglet Revenus (écouteurs ajoutés
+  // après ceux qui changent le mois, donc ils lisent le nouveau mois).
+  $("#rev-mois-prec").addEventListener("click", remplirPeriodes);
+  $("#rev-mois-suiv").addEventListener("click", remplirPeriodes);
+
+  function kpiRapport(lib, val){
+    return '<div class="rapport-kpi"><span class="k-lib">' + echapper(lib) + '</span>'
+      + '<span class="k-val">' + echapper(val) + '</span></div>';
+  }
+
+  function libelleReglement(r){
+    if(estImpaye(r)) return "À encaisser";
+    if(regleParCarte(r)) return "Carte cadeau";
+    return MODES[r.reglement] || "—";
+  }
+
+  function construireRapport(periode){
+    var estAnnee = periode.charAt(0) === "a";
+    var taux = nombre(reglages.taux);
+    var dans = function(d){ return dansPeriode({ date: d }, periode); };
+
+    // Un seul calcul, partagé avec l'onglet Revenus (fonction bilan) : le PDF
+    // ne peut pas raconter autre chose que l'écran.
+    var b = bilan(dans);
+    var ca = b.ca, attente = b.attente;
+    var charges = arrondi(ca * taux / 100);
+    var panier = b.nbSeancesEncaissees ? arrondi(b.caSeances / b.nbSeancesEncaissees) : 0;
+
+    var seances = rdvs.filter(function(r){ return r.statut === "honore" && dansPeriode(r, periode); });
+    seances.sort(function(a, b2){
+      return ((a.date || "") + (a.heure || "")).localeCompare((b2.date || "") + (b2.heure || ""));
+    });
+    var ventes = cartes.filter(function(v){ return dansPeriode(v, periode); });
+    ventes.sort(function(a, b2){ return (a.date || "").localeCompare(b2.date || ""); });
+    var annulees = rdvs.filter(function(r){ return r.statut === "annule" && dansPeriode(r, periode); }).length;
+
+    var html = '<div class="rapport-tete">'
+      + '<div><h1>' + echapper(reglages.cabinet || REGLAGES_DEFAUT.cabinet) + '</h1>'
+      + '<div class="rapport-periode">Rapport d\'activité · ' + echapper(majuscule(libellePeriode(periode))) + '</div></div>'
+      + '<div class="rapport-meta">Édité le ' + echapper(dateCourte(isoDuJour())) + '<br>Cahier clientèle</div>'
+      + '</div>';
+
+    if(!seances.length && !ventes.length && !totalDepenses(dans).total){
+      $("#rapport").innerHTML = html + '<p class="rapport-vide">Aucune activité sur cette période.</p>';
+      return;
+    }
+
+    html += '<div class="rapport-kpis">'
+      + kpiRapport("Encaissé", argent(ca))
+      + kpiRapport("Séances faites", String(b.nbSeancesFaites))
+      + kpiRapport("Panier moyen", argent(panier))
+      + kpiRapport("À encaisser", argent(attente))
+      + kpiRapport("Charges estimées (" + String(taux).replace(".", ",") + " %)", argent(charges))
+      + kpiRapport("Reste estimé", argent(arrondi(ca - charges)))
+      + '</div>';
+
+    if(b.caCartes > 0){
+      html += '<p class="rapport-note" style="border-top:0;padding-top:0;margin-top:.6rem">Encaissé = ' + argent(b.caSeances) + ' de séances + ' + argent(b.caCartes) + ' de cartes cadeaux vendues.</p>';
+    }
+
+    if(estAnnee){
+      html += '<h2>Par mois</h2><div class="rapport-tableau"><table><thead><tr>'
+        + '<th>Mois</th><th class="num">Séances</th><th class="num">Encaissé</th>'
+        + '</tr></thead><tbody>';
+      Object.keys(b.parMois).sort().forEach(function(k){
+        html += '<tr><td>' + echapper(majuscule(libelleMois(k))) + '</td>'
+          + '<td class="num">' + b.parMois[k].nb + '</td>'
+          + '<td class="num">' + argent(b.parMois[k].ca) + '</td></tr>';
+      });
+      html += '</tbody><tfoot><tr><td>Total</td><td class="num">' + b.nbSeancesFaites + '</td>'
+        + '<td class="num">' + argent(ca) + '</td></tr></tfoot></table></div>';
+    }
+
+    var modes = Object.keys(b.parMode).sort(function(x, y){ return b.parMode[y] - b.parMode[x]; });
+    if(modes.length){
+      html += '<h2>Par mode de règlement</h2><div class="rapport-tableau"><table><thead><tr>'
+        + '<th>Mode</th><th class="num">Montant</th><th class="num">Part</th>'
+        + '</tr></thead><tbody>';
+      modes.forEach(function(k){
+        html += '<tr><td>' + echapper(MODES[k] || k) + '</td>'
+          + '<td class="num">' + argent(b.parMode[k]) + '</td>'
+          + '<td class="num">' + (ca > 0 ? Math.round(b.parMode[k] / ca * 100) : 0) + ' %</td></tr>';
+      });
+      html += '</tbody><tfoot><tr><td>Total</td><td class="num">' + argent(ca) + '</td>'
+        + '<td class="num">100 %</td></tr></tfoot></table></div>';
+    }
+
+    var prestas = Object.keys(b.parPresta).sort(function(x, y){
+      return (b.parPresta[y].total - b.parPresta[x].total) || (b.parPresta[y].nb - b.parPresta[x].nb);
+    });
+    if(prestas.length){
+      html += '<h2>Par prestation</h2><div class="rapport-tableau"><table><thead><tr>'
+        + '<th>Prestation</th><th class="num">Séances</th><th class="num">Encaissé</th>'
+        + '</tr></thead><tbody>';
+      prestas.forEach(function(p){
+        html += '<tr><td>' + echapper(p) + '</td>'
+          + '<td class="num">' + b.parPresta[p].nb + '</td>'
+          + '<td class="num">' + argent(b.parPresta[p].total) + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+
+    if(seances.length){
+      html += '<h2>Détail des séances</h2><div class="rapport-tableau"><table><thead><tr>'
+        + '<th>Date</th><th>Cliente</th><th>Prestation</th><th class="num">Montant</th><th>Règlement</th>'
+        + '</tr></thead><tbody>';
+      seances.forEach(function(r){
+        html += '<tr><td class="nowrap">' + echapper(dateCourte(r.date)) + '</td>'
+          + '<td>' + echapper(nomComplet(clienteDe(r.clienteId))) + '</td>'
+          + '<td>' + echapper(r.prestation || "Séance") + '</td>'
+          + '<td class="num">' + argent(r.montant) + '</td>'
+          + '<td' + (estImpaye(r) ? ' class="attente"' : '') + '>' + echapper(libelleReglement(r)) + '</td></tr>';
+      });
+      html += '</tbody><tfoot>'
+        + '<tr><td colspan="3">Total encaissé (séances)</td><td class="num">' + argent(b.caSeances) + '</td><td></td></tr>'
+        + (attente > 0
+            ? '<tr><td colspan="3">Reste à encaisser</td><td class="num">' + argent(attente) + '</td><td></td></tr>'
+            : '')
+        + '</tfoot></table></div>';
+    }
+
+    if(ventes.length){
+      html += '<h2>Cartes cadeaux vendues</h2><div class="rapport-tableau"><table><thead><tr>'
+        + '<th>Date</th><th>Pour / de la part de</th><th>Réglée en</th><th class="num">Montant</th>'
+        + '</tr></thead><tbody>';
+      ventes.forEach(function(v){
+        var pour = v.beneficiaire || (v.clienteId && clienteDe(v.clienteId) ? nomComplet(clienteDe(v.clienteId)) : "—");
+        html += '<tr><td class="nowrap">' + echapper(dateCourte(v.date)) + '</td>'
+          + '<td>' + echapper(pour) + '</td>'
+          + '<td>' + echapper(MODES[v.reglement] || "—") + '</td>'
+          + '<td class="num">' + argent(v.montant) + '</td></tr>';
+      });
+      html += '</tbody><tfoot><tr><td colspan="3">Total cartes vendues</td>'
+        + '<td class="num">' + argent(b.caCartes) + '</td></tr></tfoot></table></div>';
+    }
+
+    var dep = totalDepenses(dans);
+    if(dep.total > 0){
+      var catsDep = Object.keys(dep.parCat).sort(function(x, y){ return dep.parCat[y] - dep.parCat[x]; });
+      html += '<h2>Dépenses par poste</h2><div class="rapport-tableau"><table><thead><tr>'
+        + '<th>Poste</th><th class="num">Montant</th>'
+        + '</tr></thead><tbody>';
+      catsDep.forEach(function(k){
+        html += '<tr><td>' + echapper(k) + '</td><td class="num">' + argent(dep.parCat[k]) + '</td></tr>';
+      });
+      html += '</tbody><tfoot><tr><td>Total dépenses</td><td class="num">' + argent(dep.total) + '</td></tr></tfoot></table></div>';
+    }
+
+    // Résultat : CA − dépenses − charges estimées (bénéfice réel estimé).
+    html += '<h2>Ce qu\'il reste (estimation)</h2><div class="rapport-tableau"><table><tbody>'
+      + '<tr><td>Encaissé</td><td class="num">' + argent(ca) + '</td></tr>'
+      + '<tr><td>− Dépenses</td><td class="num">' + argent(dep.total) + '</td></tr>'
+      + '<tr><td>− Charges URSSAF estimées</td><td class="num">' + argent(charges) + '</td></tr>'
+      + '</tbody><tfoot><tr><td>= Reste estimé</td><td class="num">' + argent(arrondi(ca - dep.total - charges)) + '</td></tr></tfoot></table></div>';
+
+    html += '<p class="rapport-note">'
+      + 'En micro-entreprise, les dépenses ne réduisent pas les charges URSSAF (calculées sur le chiffre d\'affaires brut) : elles ne sont retirées ici que pour estimer le bénéfice réel. '
+      + (annulees
+          ? annulees + ' rendez-vous annulé' + (annulees > 1 ? 's' : '') + ' sur la période, non compté' + (annulees > 1 ? 's' : '') + '. '
+          : '')
+      + (b.nbCadeau > 0
+          ? b.nbCadeau + ' séance' + (b.nbCadeau > 1 ? 's' : '') + ' réglée' + (b.nbCadeau > 1 ? 's' : '') + ' par carte cadeau (' + argent(b.cadeauUtilise) + '), déjà encaissée' + (b.nbCadeau > 1 ? 's' : '') + ' à la vente et non recomptée' + (b.nbCadeau > 1 ? 's' : '') + '. '
+          : '')
+      + 'Encaissé = ce qui a été réellement encaissé (séances réglées + cartes cadeaux vendues). Les charges sont une estimation ('
+      + String(taux).replace(".", ",") + ' % du chiffre d\'affaires) pour la mise de côté : '
+      + 'le montant officiel reste celui de l\'espace urssaf.fr. Document de suivi personnel, pas une facture. '
+      + 'Il contient les noms des clientes : à partager avec précaution.</p>';
+
+    $("#rapport").innerHTML = html;
+  }
+
+  function ouvrirRapport(periode){
+    if(!periode){
+      message("#statut-rapport", "Enregistre d'abord une séance faite : le rapport se base sur l'activité réalisée.", "ko");
+      return false;
+    }
+    construireRapport(periode);
+    ouvrirFeuille("sheet-rapport");
+    $("#sheet-rapport .sheet-inner").scrollTop = 0;
+    return true;
+  }
+
+  $("#btn-rapport").addEventListener("click", function(){ ouvrirRapport($("#rapport-periode").value); });
+
+  // Depuis les réglages : même rapport, sur la période proposée dans l'onglet Revenus.
+  $("#export-pdf").addEventListener("click", function(){
+    remplirPeriodes();
+    var p = $("#rapport-periode").value;
+    if(!p){
+      message("#statut-sauvegarde", "Enregistre d'abord une séance faite : le rapport se base sur l'activité réalisée.", "ko");
+      return;
+    }
+    fermerFeuille("sheet-reglages");
+    ouvrirRapport(p);
+  });
+
+  $("#btn-imprimer").addEventListener("click", function(){
+    if(typeof window.print !== "function"){
+      message("#statut-rapport", "Ce navigateur ne propose pas l'impression : fais une capture d'écran du rapport.", "ko");
+      return;
+    }
+    document.body.classList.add("impression");
+    window.print();
+    // Filet de sécurité : "afterprint" ne se déclenche pas sur certains mobiles,
+    // l'app resterait figée en mise en page d'impression.
+    window.setTimeout(sortirImpression, 1000);
+  });
+
+  function sortirImpression(){ document.body.classList.remove("impression"); }
+  window.addEventListener("afterprint", sortirImpression);
+  window.addEventListener("focus", sortirImpression);
+  // Impression lancée depuis le menu du navigateur pendant que l'aperçu est ouvert.
+  window.addEventListener("beforeprint", function(){
+    if(!$("#sheet-rapport").hidden) document.body.classList.add("impression");
+  });
+
+  /* ================================================================
+     Rendu global
+     ================================================================ */
+  function toutAfficher(){
+    afficherClientes();
+    afficherRdv();
+    afficherRevenus();
+    remplirPeriodes();
+    afficherRappel();
+  }
+
+  stockageOk = testerStockage();
+  $("#nom-cabinet").textContent = reglages.cabinet || REGLAGES_DEFAUT.cabinet;
+  $("#fab").hidden = false;
+  toutAfficher();
+})();
+</script>
+
+<script>
+/* Service worker : mise en cache hors ligne + bandeau de mise à jour. */
+(function(){
+  "use strict";
+  if(!("serviceWorker" in navigator)) return;
+  var estLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if(location.protocol !== "https:" && !estLocal) return;
+
+  function bandeau(sw){
+    var el = document.getElementById("maj-bandeau");
+    if(!el) return;
+    el.hidden = false;
+    document.getElementById("maj-recharger").onclick = function(){
+      if(sw) sw.postMessage({ type: "SKIP_WAITING" });
+      location.reload();
+    };
+  }
+
+  navigator.serviceWorker.register("sw.js").then(function(reg){
+    if(reg.waiting) bandeau(reg.waiting);
+    reg.addEventListener("updatefound", function(){
+      var nouveau = reg.installing;
+      if(!nouveau) return;
+      nouveau.addEventListener("statechange", function(){
+        if(nouveau.state === "installed" && navigator.serviceWorker.controller) bandeau(nouveau);
+      });
+    });
+  }).catch(function(){ /* hors ligne ou fichier absent : sans conséquence */ });
+})();
+</script>
+</body>
+</html>
