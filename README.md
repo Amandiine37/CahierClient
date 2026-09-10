@@ -1,4 +1,4 @@
-# Cahier clientèle
+# Cahier clientèle — Les Ailes de Flo
 
 Application mobile (PWA) pour tenir le cahier clientèle, les rendez-vous et les revenus
 d'auto-entreprise d'une praticienne en massages bien-être.
@@ -128,10 +128,11 @@ Thème clair / sombre automatique, forçable par le bouton lune de la barre du h
 index.html            toute l'application (structure, styles, code)
 manifest.webmanifest  nom, icônes et couleurs de l'app installée
 sw.js                 service worker : hors connexion + bandeau de mise à jour
-icon-192.png          icônes, régénérables par icones.py
+icon-192.png          icônes : l'arbre du site, crème sur fond vert (régénérables)
 icon-512.png
+arbre-separateur.png  l'arbre repris du site les-ailes-de-flo.com (source des icônes)
 serve.py              serveur de test local (développement uniquement)
-icones.py             regenere les deux icônes (aucune bibliothèque à installer)
+icones.py             regénère les deux icônes depuis arbre-separateur.png (sans bibliothèque)
 README.md             ce fichier
 ```
 
