@@ -1,4 +1,4 @@
-# Cahier clientèle — Les Ailes de Flo
+# Cahier clientèle
 
 Application mobile (PWA) pour tenir le cahier clientèle, les rendez-vous et les revenus
 d'auto-entreprise d'une praticienne en massages bien-être.
