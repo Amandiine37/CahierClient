@@ -467,6 +467,7 @@
 
     <!-- ======================= CLIENTES ======================= -->
     <section class="view active" id="view-clientes">
+      <div id="bloc-agenda" hidden></div>
       <div class="recherche">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
           <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
@@ -948,7 +949,7 @@
 (function(){
   "use strict";
 
-  var VERSION = "1.7";
+  var VERSION = "1.8";
 
   /* ================================================================
      Clés de stockage
@@ -979,6 +980,14 @@
   ];
   // Compat : certaines fonctions référencent encore PRESTATIONS_DEFAUT en repli.
   var PRESTATIONS_DEFAUT = PRESTATIONS_MODELE;
+  // Copie PROFONDE du modèle, avec un id neuf par prestation. Indispensable :
+  // sans copie on partagerait/muterait les objets constants, et sans id le
+  // crayon/la suppression (qui travaillent par id) seraient cassés.
+  function clonerModele(){
+    return PRESTATIONS_MODELE.map(function(p){
+      return { id: uid(), nom: p.nom, duree: p.duree, prix: p.prix, categorie: p.categorie };
+    });
+  }
 
   var REGLAGES_DEFAUT = {
     cabinet: "Mon cabinet",
@@ -1051,7 +1060,7 @@
   var rdvs = lire(K_RDV, []);
   var cartes = lire(K_CARTES, []);
   var depenses = lire(K_DEPENSES, []);
-  var prestations = lire(K_PRESTATIONS, null) || PRESTATIONS_DEFAUT.slice();
+  var prestations = lire(K_PRESTATIONS, null) || clonerModele();
   var provisions = lire(K_PROVISIONS, {});
   var paiements = lire(K_PAIEMENTS, []);
   var reglages = Object.assign({}, REGLAGES_DEFAUT, lire(K_REGLAGES, {}));
@@ -1448,7 +1457,7 @@
     reglages.cabinet = nom || REGLAGES_DEFAUT.cabinet;
     reglages.palette = paletteSetup;
     reglages.installe = true;
-    var choixPresta = (f.presta.value === "vide") ? [] : PRESTATIONS_MODELE.slice();
+    var choixPresta = (f.presta.value === "vide") ? [] : clonerModele();
     prestations = choixPresta;
     sauverReglages();
     sauverPrestations();
@@ -1623,7 +1632,51 @@
     return n;
   }
 
+  /* Agenda en tête de l'accueil : rendez-vous du jour + prochains. Masqué
+     s'il n'y a rien à venir (pour ne pas encombrer un cahier vide). */
+  function afficherAgenda(){
+    var hote = $("#bloc-agenda");
+    var jour = isoDuJour();
+    var aVenir = rdvs.filter(function(r){ return r.date && r.date >= jour && r.statut !== "annule"; })
+      .sort(function(a, b){ return ((a.date || "") + (a.heure || "")).localeCompare((b.date || "") + (b.heure || "")); });
+    if(!aVenir.length){ hote.innerHTML = ""; hote.hidden = true; return; }
+    hote.hidden = false;
+
+    var auj = aVenir.filter(function(r){ return r.date === jour; });
+    var apres = aVenir.filter(function(r){ return r.date > jour; });
+    var suite = apres.slice(0, 5);
+
+    function ligne(r){
+      var c = clienteDe(r.clienteId);
+      var quand = (r.date === jour) ? (r.heure || "Aujourd'hui") : (dateCourte(r.date) + (r.heure ? " · " + r.heure : ""));
+      return '<button class="ligne" type="button" data-agenda="' + echapper(r.id) + '">'
+        + '<span class="pastille">' + echapper(c ? initiales(c) : "?") + '</span>'
+        + '<span class="corps"><span class="nom">' + echapper(nomComplet(c)) + '</span>'
+        + '<span class="detail">' + echapper(r.prestation || "Séance") + '</span></span>'
+        + '<span class="droite"><span class="sous" style="font-weight:500">' + echapper(quand) + '</span></span>'
+        + '</button>';
+    }
+
+    var html = '<h2 class="section" style="margin-top:.2rem">Agenda <span class="compteur">' + aVenir.length + ' à venir</span></h2>';
+    if(auj.length){
+      html += '<div class="jour-titre">Aujourd\'hui</div>';
+      for(var i = 0; i < auj.length; i++) html += ligne(auj[i]);
+    }
+    if(suite.length){
+      html += '<div class="jour-titre">Prochainement</div>';
+      for(var j = 0; j < suite.length; j++) html += ligne(suite[j]);
+      if(apres.length > suite.length){
+        html += '<p class="mini-note" style="margin:.3rem 0 0">… et ' + (apres.length - suite.length) + ' autre(s). Onglet Rendez-vous pour tout voir.</p>';
+      }
+    }
+    hote.innerHTML = html;
+    Array.prototype.forEach.call(hote.querySelectorAll("[data-agenda]"), function(b){
+      b.addEventListener("click", function(){ ouvrirFormRdv(b.getAttribute("data-agenda")); });
+    });
+  }
+
   function afficherClientes(){
+    afficherAgenda();
     var jour = isoDuJour();
     var moisCle = moisCourant();
 
@@ -2969,10 +3022,13 @@
         rdvs = Array.isArray(data.rdvs) ? data.rdvs : [];
         cartes = Array.isArray(data.cartes) ? data.cartes : [];
         depenses = Array.isArray(data.depenses) ? data.depenses : [];
-        prestations = Array.isArray(data.prestations) && data.prestations.length ? data.prestations : PRESTATIONS_DEFAUT.slice();
+        prestations = Array.isArray(data.prestations) && data.prestations.length ? data.prestations : clonerModele();
         provisions = data.provisions || {};
         paiements = Array.isArray(data.paiements) ? data.paiements : [];
         reglages = Object.assign({}, REGLAGES_DEFAUT, data.reglages || {});
+        normaliserPrestations();          // ids/catégories pour d'anciennes sauvegardes
+        enregistrerPalettePerso(reglages.palettePerso);
+        appliquerPalette(reglages.palette);
         sauverClientes(); sauverRdv(); sauverCartes(); sauverDepenses(); sauverPrestations(); sauverProvisions(); sauverPaiements(); sauverReglages();
         $("#zone-restaurer").value = "";
         $("#nom-cabinet").textContent = reglages.cabinet;

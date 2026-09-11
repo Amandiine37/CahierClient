@@ -66,7 +66,7 @@ Signature, thème mauve, 37 prestations relevées sur bettysignature.fr) est liv
 
 | Onglet | Ce qu'il contient |
 |---|---|
-| **Clientes** | Prénom, nom, adresse mail, téléphone, notes. Recherche, fiche détaillée avec l'historique des séances, appel et mail en un geste. Bouton **« Écrire à mes clientes »** pour un envoi groupé. |
+| **Clientes** | En haut, un **agenda** (rendez-vous du jour + prochains, masqué s'il n'y a rien à venir). Puis prénom, nom, adresse mail, téléphone, notes. Recherche, fiche détaillée avec l'historique des séances, appel et mail en un geste. Bouton **« Écrire à mes clientes »** pour un envoi groupé. |
 | **Rendez-vous** | Un mois à la fois. Date, heure, prestation, durée, montant réglé, mode de règlement, statut (à venir / faite / annulée). |
 | **Revenus** | Chiffre d'affaires encaissé du mois, panier moyen, provision URSSAF, **dépenses**, **ce qu'il te reste**, répartition par mode de règlement, **cartes cadeaux vendues**, 12 derniers mois, cumul de l'année et plafond micro. |
 
