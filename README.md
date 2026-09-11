@@ -1,12 +1,66 @@
-# Cahier clientèle — Les Ailes de Flo
+# Cahier clientèle
 
 Application mobile (PWA) pour tenir le cahier clientèle, les rendez-vous et les revenus
-d'auto-entreprise d'une praticienne en massages bien-être.
+d'auto-entreprise d'une praticienne en massages / bien-être.
 
 Même principe que **suivi-revente** : un site web qui s'installe sur l'écran d'accueil du
 téléphone et fonctionne hors connexion. **Aucune donnée ne part sur internet.**
 
+L'app est **partageable telle quelle** : une seule adresse, que n'importe quelle praticienne
+peut installer. Au premier lancement, chacune choisit son nom, ses couleurs et sa liste de
+prestations (voir « Personnalisation & partage »). Les données étant propres à chaque appareil,
+deux praticiennes qui installent la même adresse ne se voient jamais.
+
 ---
+
+## Personnalisation & partage
+
+Au **tout premier lancement** sur un appareil, un écran d'accueil demande :
+
+1. **le nom de l'activité** (affiché en haut de l'app) ;
+2. **la couleur de l'app** — 4 thèmes : Vert sauge (défaut, celui des Ailes de Flo),
+   Terracotta, Lavande, Bleu ardoise ;
+3. **les prestations** : partir d'une **liste type** de soins courants (à tarifer) ou **de zéro**.
+
+Tout reste modifiable ensuite dans les **Réglages** (nom, couleurs, prestations). Le thème
+clair/sombre suit le téléphone et se force au besoin (bouton lune).
+
+**Pour donner l'app à une autre praticienne :** il suffit de lui transmettre l'adresse
+(`https://amandiine37.github.io/CahierClient/`) — elle l'ajoute à son écran d'accueil et fait
+sa propre configuration. Rien à dupliquer, rien à recompiler. Une installation existante (avec
+des données déjà présentes) n'est jamais renvoyée vers l'écran d'accueil et garde son thème.
+
+### Fichier de configuration (installation « clé en main »)
+
+Pour préparer une praticienne d'avance, on lui fournit un **fichier `.json` de configuration**
+qui remplit son nom, ses couleurs et sa liste de prestations d'un coup. Elle l'importe :
+- depuis l'**écran d'accueil** → bouton « Importer une configuration » ;
+- ou plus tard depuis les **Réglages** → « Importer une configuration » (avec confirmation ;
+  remplace nom/couleurs/prestations, sans toucher aux clientes/RDV/revenus).
+
+Format du fichier (voir `config-betty.json` comme exemple) :
+
+```json
+{
+  "format": "cahier-config",
+  "cabinet": "Nom du cabinet",
+  "email": "adresse@exemple.fr",
+  "palette": "vert",                     // soit une palette intégrée…
+  "palette": {                           // …soit une palette sur-mesure :
+    "cle": "signature", "nom": "Signature (mauve)", "apercu": "#9B4E86",
+    "light": { "bg":"…","surface":"…","surface2":"…","ink":"…","inkMuted":"…",
+               "border":"…","accent":"…","accentStrong":"…","accentInk":"…","or":"…","eau":"…","ok":"…" },
+    "dark":  { … mêmes clés … }
+  },
+  "prestations": [ { "nom": "Massage 1h", "duree": 60, "prix": 45, "categorie": "Massages" } ]
+}
+```
+
+`categorie` est facultative (regroupe les prestations dans les réglages et le menu des rendez-vous).
+
+Une palette sur-mesure importée est mémorisée (`reglages.palettePerso`), ré-appliquée à chaque
+ouverture et ajoutée aux choix de couleurs dans les réglages. `config-betty.json` (SPA Betty
+Signature, thème mauve, 37 prestations relevées sur bettysignature.fr) est livré comme modèle.
 
 ## Les trois onglets
 
@@ -77,10 +131,21 @@ L'onglet Revenus calcule `chiffre d'affaires encaissé × taux de charges`, puis
 
 ## Prestations et tarifs
 
-Les 15 prestations pré-remplies viennent du site **les-ailes-de-flo.com** (massage
-californien, lomi-lomi, pierres chaudes, drainages DIC et doux, japonais du visage,
-Amma assis, escales, madérothérapie, cures, carte cadeau). Choisir une prestation
-remplit automatiquement la durée et le montant. La liste s'ajuste dans les réglages.
+Au premier lancement, la praticienne choisit une **liste type** neutre (tarifs à 0, à renseigner)
+ou une liste **vide**. Le modèle est dans `PRESTATIONS_MODELE` (côté script).
+
+Chaque prestation a un **nom, une durée, un tarif et une catégorie** (`{ id, nom, duree, prix,
+categorie }`). Dans les réglages, la liste est **groupée par catégorie** (Massages, Esthétique,
+Ongles, Épilation…) ; chaque ligne a un **crayon ✎ pour modifier** et un **× pour retirer**. La
+catégorie est libre (champ avec suggestions des catégories déjà utilisées).
+
+Lors d'un **rendez-vous**, la prestation se choisit dans un **menu déroulant groupé par catégorie**
+(le tarif y est rappelé), et choisir une prestation **remplit la durée et le montant**. Une entrée
+**« Autre (saisir à la main) »** permet une prestation ponctuelle hors liste ; à la réouverture d'un
+tel rendez-vous, le champ libre réapparaît automatiquement.
+
+Les anciennes prestations (celles de Florence, sans catégorie/id) sont migrées automatiquement au
+chargement (un id est ajouté, la catégorie reste vide jusqu'à édition) — rien n'est perdu.
 
 ## Où sont les données
 
@@ -104,7 +169,8 @@ sauvegarde (fréquence réglable, report de 2 jours possible).
 
 ## Charte graphique
 
-Reprise du site les-ailes-de-flo.com, couleurs relevées directement sur la page :
+Le thème **Vert sauge** (défaut) reprend le site les-ailes-de-flo.com, couleurs relevées
+directement sur la page :
 
 | Rôle | Clair | Sombre |
 |---|---|---|
@@ -115,10 +181,16 @@ Reprise du site les-ailes-de-flo.com, couleurs relevées directement sur la page
 | Surfaces | `#FFFEFB` | `#24312E` |
 | Doré (accent) | `#AF9D69` | `#C9B685` |
 
-Polices : **Fraunces** (titres) et **Work Sans** (texte), comme le site, chargées depuis
-Google Fonts avec une repli système si le réseau manque.
+Trois autres palettes complètes (clair + sombre) sont proposées : **Terracotta**, **Lavande**,
+**Bleu ardoise**. Elles sont définies dans l'objet `PALETTES` du script et appliquées en JS
+(variables CSS posées sur `:root`), ce qui l'emporte sur les couleurs CSS de repli. Ajouter une
+palette = ajouter une entrée `{ light:{…}, dark:{…} }` à `PALETTES`.
 
-Thème clair / sombre automatique, forçable par le bouton lune de la barre du haut.
+Polices : **Fraunces** (titres) et **Work Sans** (texte), comme le site, chargées depuis
+Google Fonts avec un repli système si le réseau manque.
+
+Thème clair / sombre automatique, forçable par le bouton lune de la barre du haut. La couleur
+de la barre du navigateur (`theme-color`) suit la palette choisie.
 
 ---
 
@@ -133,6 +205,8 @@ icon-512.png
 arbre-separateur.png  l'arbre repris du site les-ailes-de-flo.com (source des icônes)
 serve.py              serveur de test local (développement uniquement)
 icones.py             regénère les deux icônes depuis arbre-separateur.png (sans bibliothèque)
+config-betty.json     configuration prête à importer (SPA Betty Signature)
+config-florence.json  configuration prête à importer (Les Ailes de Flo)
 README.md             ce fichier
 ```
 

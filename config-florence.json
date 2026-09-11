@@ -1,0 +1,23 @@
+{
+  "format": "cahier-config",
+  "cabinet": "Les Ailes de Flo",
+  "email": "",
+  "palette": "vert",
+  "prestations": [
+    { "nom": "Massage californien - 1h", "duree": 60, "prix": 50, "categorie": "Massages" },
+    { "nom": "Massage lomi-lomi - 1h", "duree": 60, "prix": 50, "categorie": "Massages" },
+    { "nom": "Massage pierres chaudes - 1h30", "duree": 90, "prix": 70, "categorie": "Massages" },
+    { "nom": "Massage Amma assis - 25 min", "duree": 25, "prix": 30, "categorie": "Massages" },
+    { "nom": "Drainage DIC - Ventre - 1h", "duree": 60, "prix": 60, "categorie": "Drainages" },
+    { "nom": "Drainage DIC - Jambes - 1h", "duree": 60, "prix": 60, "categorie": "Drainages" },
+    { "nom": "Drainage DIC - 2 zones - 2h", "duree": 120, "prix": 110, "categorie": "Drainages" },
+    { "nom": "Drainage doux - Corps - 1h", "duree": 60, "prix": 60, "categorie": "Drainages" },
+    { "nom": "Cure 5 séances DIC - 1 zone", "duree": 300, "prix": 275, "categorie": "Cures" },
+    { "nom": "Cure 5 séances DIC - 2 zones", "duree": 600, "prix": 525, "categorie": "Cures" },
+    { "nom": "Japonais du visage - 30 min", "duree": 30, "prix": 35, "categorie": "Visage" },
+    { "nom": "Escale dos - 25 min", "duree": 25, "prix": 30, "categorie": "Escales" },
+    { "nom": "Escale jambes - 25 min", "duree": 25, "prix": 30, "categorie": "Escales" },
+    { "nom": "Madérothérapie (option)", "duree": 10, "prix": 10, "categorie": "Options" },
+    { "nom": "Carte cadeau", "duree": 0, "prix": 0, "categorie": "Divers" }
+  ]
+}

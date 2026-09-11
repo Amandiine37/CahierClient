@@ -9,7 +9,7 @@
  * « Une nouvelle version de l'appli est prete ». Sans elle, le navigateur
  * ne voit aucune mise a jour et le bandeau n'apparait jamais.
  */
-var VERSION = "1.4";
+var VERSION = "1.7";
 var CACHE = "cahier-v" + VERSION;
 var ASSETS = [
   "./",

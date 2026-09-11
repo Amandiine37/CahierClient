@@ -345,6 +345,29 @@
   .droite-txt{text-align:right;}
   .nowrap{white-space:nowrap;}
 
+  /* ---------- Choix de palette (réglages + accueil) ---------- */
+  .palette-choix{display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem;}
+  .palette-opt{
+    display:flex; align-items:center; gap:.55rem; cursor:pointer;
+    border:1px solid var(--border); border-radius:12px; padding:.55rem .6rem;
+    background:var(--surface); font-family:inherit; color:var(--ink); text-align:left;
+  }
+  .palette-opt .pastille-couleur{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.12);}
+  .palette-opt .pnom{font-size:.86rem;}
+  .palette-opt[aria-pressed="true"]{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent) inset;}
+
+  /* ---------- Écran d'accueil (première utilisation) ---------- */
+  #setup{position:fixed; inset:0; z-index:50; background:var(--bg); overflow-y:auto;}
+  #setup[hidden]{display:none;}
+  .setup-inner{max-width:520px; margin:0 auto; padding:1.5rem 1.15rem calc(2rem + env(safe-area-inset-bottom));}
+  .setup-marque{width:56px;height:56px;border-radius:16px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+  .setup-marque svg{width:30px;height:30px;}
+  #setup h2{font-family:var(--font-display); font-size:1.5rem; font-weight:500; margin:0 0 .35rem;}
+  #setup .intro{color:var(--ink-muted); font-size:.9rem; line-height:1.55; margin:0 0 1.4rem;}
+  .setup-bloc{margin-bottom:1.3rem;}
+  .setup-bloc > label{display:block; font-family:var(--font-display); font-size:1rem; font-weight:500; text-transform:none; letter-spacing:0; color:var(--ink); margin-bottom:.5rem;}
+  .setup-radios{display:grid; gap:.5rem;}
+
   /* ---------- Rapport imprimable (PDF via l'impression) ---------- */
   .rapport-choix{display:flex; gap:.5rem; flex-wrap:wrap; align-items:stretch;}
   .rapport-choix select{flex:1; min-width:150px;}
@@ -424,7 +447,7 @@
     </div>
     <div class="titres">
       <h1>Cahier clientèle</h1>
-      <p id="nom-cabinet">Les Ailes de Flo</p>
+      <p id="nom-cabinet">Mon cabinet</p>
     </div>
     <button class="icon-btn" id="btn-theme" type="button" title="Thème clair / sombre">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -549,6 +572,48 @@
   </button>
 </div>
 
+<!-- ======================= ÉCRAN D'ACCUEIL (1re utilisation) ======================= -->
+<div id="setup" hidden>
+  <div class="setup-inner">
+    <div class="setup-marque" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22V8"/><path d="M12 8 7 5"/><path d="m12 11 5-3"/><path d="M12 15 7 12"/><path d="m12 15 5-3"/>
+        <circle cx="12" cy="6.5" r="1.6"/><circle cx="6.4" cy="4.6" r="1.5"/><circle cx="17.6" cy="7.4" r="1.5"/><circle cx="6.4" cy="11.6" r="1.5"/><circle cx="17.6" cy="14.4" r="1.5"/>
+      </svg>
+    </div>
+    <h2>Bienvenue dans ton cahier</h2>
+    <p class="intro">Quelques réglages pour t'installer. Tu pourras tout changer plus tard dans les réglages. Tes données restent sur cet appareil, rien n'est envoyé sur internet.</p>
+
+    <form id="form-setup" autocomplete="off">
+      <div class="setup-bloc">
+        <label for="s-cabinet">Le nom de ton activité</label>
+        <input id="s-cabinet" name="cabinet" placeholder="Ex. Mon cabinet bien-être" required>
+      </div>
+
+      <div class="setup-bloc">
+        <label>La couleur de l'app</label>
+        <div class="palette-choix" id="setup-palette"></div>
+      </div>
+
+      <div class="setup-bloc">
+        <label>Tes prestations</label>
+        <div class="setup-radios">
+          <label class="case" style="background:var(--surface)"><input type="radio" name="presta" value="modele" checked><span class="txt"><b>Partir d'une liste type</b><span>Des soins courants déjà prêts, à adapter et à tarifer.</span></span></label>
+          <label class="case" style="background:var(--surface)"><input type="radio" name="presta" value="vide"><span class="txt"><b>Partir de zéro</b><span>J'ajoute mes prestations moi-même.</span></span></label>
+        </div>
+      </div>
+
+      <button class="bouton" type="submit">Créer mon cahier</button>
+    </form>
+
+    <div class="separateur"></div>
+    <p class="mini-note" style="margin-top:0">Tu as reçu un fichier de configuration prêt à l'emploi&nbsp;? Importe-le pour tout remplir d'un coup.</p>
+    <button class="bouton secondaire" type="button" id="btn-setup-import">Importer une configuration</button>
+    <input type="file" id="setup-import" accept="application/json,.json" hidden>
+    <div class="statut" id="statut-setup"></div>
+  </div>
+</div>
+
 <!-- ======================= FEUILLE : CLIENTE ======================= -->
 <div class="sheet" id="sheet-cliente" hidden>
   <div class="sheet-inner">
@@ -601,9 +666,9 @@
         <div class="champ"><label for="r-heure">Heure</label><input id="r-heure" name="heure" type="time"></div>
       </div>
       <div class="champ">
-        <label for="r-prestation">Prestation</label>
-        <input id="r-prestation" name="prestation" list="liste-prestations" required placeholder="Massage californien - 1h">
-        <datalist id="liste-prestations"></datalist>
+        <label for="r-prestation-select">Prestation</label>
+        <select id="r-prestation-select" name="prestationSelect"></select>
+        <input id="r-prestation-libre" name="prestationLibre" placeholder="Nom de la prestation" hidden style="margin-top:.45rem">
       </div>
       <div class="duo">
         <div class="champ"><label for="r-duree">Durée (min)</label><input id="r-duree" name="duree" type="number" min="0" step="5" inputmode="numeric"></div>
@@ -738,7 +803,11 @@
 
     <h2 class="section">Mon activité</h2>
     <form id="form-reglages" autocomplete="off">
-      <div class="champ"><label for="g-cabinet">Nom affiché</label><input id="g-cabinet" name="cabinet" placeholder="Les Ailes de Flo"></div>
+      <div class="champ"><label for="g-cabinet">Nom affiché</label><input id="g-cabinet" name="cabinet" placeholder="Nom de ton cabinet"></div>
+      <div class="champ">
+        <label>Couleurs de l'app</label>
+        <div class="palette-choix" id="reglages-palette"></div>
+      </div>
       <div class="champ"><label for="g-email">Ton adresse mail</label><input id="g-email" name="email" type="email" inputmode="email" placeholder="pour les envois groupés"><p class="aide">Utilisée comme expéditeur visible de tes mails groupés (tu en reçois une copie). Tes clientes restent en copie cachée.</p></div>
       <div class="duo">
         <div class="champ">
@@ -772,14 +841,19 @@
     <p class="aide">Reprises du site les-ailes-de-flo.com. Elles pré-remplissent la durée et le montant d'un rendez-vous.</p>
     <div id="liste-prestations-reglages"></div>
     <form id="form-prestation" autocomplete="off" style="margin-top:.6rem">
-      <div class="trio">
-        <div class="champ" style="grid-column:span 3"><label for="p-nom">Nouvelle prestation</label><input id="p-nom" name="nom" placeholder="Nom"></div>
+      <input type="hidden" id="p-id" name="id">
+      <div class="champ"><label for="p-nom" id="p-nom-label">Nouvelle prestation</label><input id="p-nom" name="nom" placeholder="Nom"></div>
+      <div class="champ">
+        <label for="p-categorie">Catégorie</label>
+        <input id="p-categorie" name="categorie" list="liste-categories-presta" placeholder="Ex. Massage, Esthétique, Ongles…">
+        <datalist id="liste-categories-presta"></datalist>
       </div>
       <div class="duo">
         <div class="champ"><label for="p-duree">Durée (min)</label><input id="p-duree" name="duree" type="number" min="0" step="5" inputmode="numeric"></div>
         <div class="champ"><label for="p-prix">Tarif (€)</label><input id="p-prix" name="prix" type="number" min="0" step="0.01" inputmode="decimal"></div>
       </div>
-      <button class="bouton secondaire" type="submit">Ajouter la prestation</button>
+      <button class="bouton secondaire" type="submit" id="btn-prestation">Ajouter la prestation</button>
+      <button class="bouton" type="button" id="btn-prestation-annuler" hidden style="margin-top:.4rem">Annuler la modification</button>
       <div class="statut" id="statut-prestation"></div>
     </form>
 
@@ -813,6 +887,13 @@
         <option value="30">Tous les mois</option>
       </select>
     </div>
+
+    <div class="separateur"></div>
+    <h2 class="section">Importer une configuration</h2>
+    <p class="aide">Un fichier de configuration (préparé à l'avance) remplace le nom, les couleurs et la liste des prestations. Tes clientes, rendez-vous et revenus ne sont pas touchés.</p>
+    <button class="bouton secondaire" type="button" id="btn-reglages-import">Choisir un fichier de configuration</button>
+    <input type="file" id="reglages-import" accept="application/json,.json" hidden>
+    <div class="statut" id="statut-import"></div>
 
     <div class="separateur"></div>
     <h2 class="section">Restaurer</h2>
@@ -867,7 +948,7 @@
 (function(){
   "use strict";
 
-  var VERSION = "1.4";
+  var VERSION = "1.7";
 
   /* ================================================================
      Clés de stockage
@@ -883,32 +964,31 @@
   var K_SAUVEGARDE = "cahier_sauvegarde_v1";
   var K_THEME = "cahier_theme";
 
-  /* Prestations relevées sur le site les-ailes-de-flo.com. */
-  var PRESTATIONS_DEFAUT = [
-    { nom: "Massage californien - 1h", duree: 60, prix: 50 },
-    { nom: "Massage lomi-lomi - 1h", duree: 60, prix: 50 },
-    { nom: "Massage pierres chaudes - 1h30", duree: 90, prix: 70 },
-    { nom: "Drainage DIC - Ventre - 1h", duree: 60, prix: 60 },
-    { nom: "Drainage DIC - Jambes - 1h", duree: 60, prix: 60 },
-    { nom: "Drainage DIC - 2 zones - 2h", duree: 120, prix: 110 },
-    { nom: "Cure 5 séances DIC - 1 zone", duree: 300, prix: 275 },
-    { nom: "Cure 5 séances DIC - 2 zones", duree: 600, prix: 525 },
-    { nom: "Drainage doux - Corps - 1h", duree: 60, prix: 60 },
-    { nom: "Japonais du visage - 30 min", duree: 30, prix: 35 },
-    { nom: "Massage Amma assis - 25 min", duree: 25, prix: 30 },
-    { nom: "Escale dos - 25 min", duree: 25, prix: 30 },
-    { nom: "Escale jambes - 25 min", duree: 25, prix: 30 },
-    { nom: "Madérothérapie (option)", duree: 10, prix: 10 },
-    { nom: "Carte cadeau", duree: 0, prix: 0 }
+  /* Liste type, neutre : proposée au premier lancement, à compléter par la
+     praticienne (les tarifs sont laissés à 0, à renseigner). */
+  var PRESTATIONS_MODELE = [
+    { nom: "Massage relaxant - 1h", duree: 60, prix: 0, categorie: "Massage" },
+    { nom: "Massage relaxant - 30 min", duree: 30, prix: 0, categorie: "Massage" },
+    { nom: "Massage dos & nuque - 30 min", duree: 30, prix: 0, categorie: "Massage" },
+    { nom: "Massage aux pierres chaudes - 1h", duree: 60, prix: 0, categorie: "Massage" },
+    { nom: "Massage femme enceinte - 1h", duree: 60, prix: 0, categorie: "Massage" },
+    { nom: "Réflexologie plantaire - 45 min", duree: 45, prix: 0, categorie: "Soin" },
+    { nom: "Drainage lymphatique - 1h", duree: 60, prix: 0, categorie: "Soin" },
+    { nom: "Soin du visage - 30 min", duree: 30, prix: 0, categorie: "Soin du visage" },
+    { nom: "Massage assis - 20 min", duree: 20, prix: 0, categorie: "Massage" }
   ];
+  // Compat : certaines fonctions référencent encore PRESTATIONS_DEFAUT en repli.
+  var PRESTATIONS_DEFAUT = PRESTATIONS_MODELE;
 
   var REGLAGES_DEFAUT = {
-    cabinet: "Les Ailes de Flo",
+    cabinet: "Mon cabinet",
     email: "",
     taux: 24.6,
     plafond: 77700,
     periodicite: "trimestrielle",
-    frequenceRappel: 14
+    frequenceRappel: 14,
+    palette: "vert",
+    installe: false
   };
 
   // Modes d'encaissement réel (ce qui rentre dans le CA). « Carte cadeau »
@@ -981,6 +1061,28 @@
   function sauverCartes(){ ecrire(K_CARTES, cartes); }
   function sauverDepenses(){ ecrire(K_DEPENSES, depenses); }
   function sauverPrestations(){ ecrire(K_PRESTATIONS, prestations); }
+
+  // Chaque prestation a un id stable + une catégorie (repli ""). Migre les
+  // anciennes listes (celles de Florence) sans rien perdre.
+  function normaliserPrestations(){
+    var change = false;
+    for(var i = 0; i < prestations.length; i++){
+      var p = prestations[i];
+      if(!p.id){ p.id = uid(); change = true; }
+      if(p.categorie === undefined || p.categorie === null){ p.categorie = ""; change = true; }
+    }
+    return change;
+  }
+  if(normaliserPrestations()) sauverPrestations();
+
+  function categoriesPrestations(){
+    var vues = {}, liste = [];
+    for(var i = 0; i < prestations.length; i++){
+      var c = (prestations[i].categorie || "").trim();
+      if(c && !vues[c]){ vues[c] = true; liste.push(c); }
+    }
+    return liste;
+  }
   function sauverProvisions(){ ecrire(K_PROVISIONS, provisions); }
   function sauverPaiements(){ ecrire(K_PAIEMENTS, paiements); }
   function sauverReglages(){ ecrire(K_REGLAGES, reglages); }
@@ -1208,13 +1310,72 @@
   });
 
   /* ================================================================
-     Thème
+     Thème : mode clair/sombre + palette de couleurs personnalisable
      ================================================================ */
+  /* Chaque palette donne le jeu complet de couleurs en clair et en sombre.
+     Le vert « Les Ailes de Flo » reste le défaut. Appliquée en JS (variables
+     posées sur :root), elle l'emporte sur les valeurs CSS de repli. */
+  var PALETTES = {
+    vert: { nom: "Vert sauge", apercu: "#4F6450",
+      light: { bg:"#F8F6F1", surface:"#FFFEFB", surface2:"#EDEFE7", ink:"#2A332A", inkMuted:"#798978", border:"#CED2C9", accent:"#4F6450", accentStrong:"#38504D", accentInk:"#FFFEFB", or:"#AF9D69", eau:"#87ABA6", ok:"#4F6450" },
+      dark:  { bg:"#1C2826", surface:"#24312E", surface2:"#2C3A36", ink:"#EDEFE7", inkMuted:"#A4ADA1", border:"#3A4A45", accent:"#A9C0A8", accentStrong:"#C3D5D3", accentInk:"#1C2826", or:"#C9B685", eau:"#87ABA6", ok:"#8FBF95" } },
+    terracotta: { nom: "Terracotta", apercu: "#B4623F",
+      light: { bg:"#FAF5F0", surface:"#FFFDFA", surface2:"#F3E9E0", ink:"#33271F", inkMuted:"#9A7B68", border:"#E4D3C6", accent:"#B4623F", accentStrong:"#8F4A2E", accentInk:"#FFFDFA", or:"#C08A3E", eau:"#C9A28A", ok:"#5B7B52" },
+      dark:  { bg:"#241A15", surface:"#2E211B", surface2:"#382A22", ink:"#F1E7DF", inkMuted:"#C0A594", border:"#4A3A30", accent:"#E08A63", accentStrong:"#EFA684", accentInk:"#241A15", or:"#D8A55E", eau:"#C9A28A", ok:"#9BC08F" } },
+    lavande: { nom: "Lavande", apercu: "#6E5A93",
+      light: { bg:"#F7F5FA", surface:"#FFFEFF", surface2:"#ECE7F2", ink:"#2C2733", inkMuted:"#837795", border:"#D6CEE2", accent:"#6E5A93", accentStrong:"#52416F", accentInk:"#FFFEFF", or:"#B49A6A", eau:"#9AA8CF", ok:"#5B7B52" },
+      dark:  { bg:"#201C29", surface:"#282334", surface2:"#322B40", ink:"#ECE7F2", inkMuted:"#ADA3BD", border:"#443B54", accent:"#B7A3D8", accentStrong:"#CBBCE6", accentInk:"#201C29", or:"#C9B685", eau:"#9AA8CF", ok:"#9BC08F" } },
+    bleu: { nom: "Bleu ardoise", apercu: "#3E6C81",
+      light: { bg:"#F2F5F7", surface:"#FDFEFF", surface2:"#E4EBEF", ink:"#222E33", inkMuted:"#6E828C", border:"#C8D5DC", accent:"#3E6C81", accentStrong:"#2C5062", accentInk:"#FDFEFF", or:"#C0A15E", eau:"#7FB0BE", ok:"#5B7B52" },
+      dark:  { bg:"#16232A", surface:"#1E2C33", surface2:"#26363E", ink:"#E5EDF1", inkMuted:"#9DB0B9", border:"#35474F", accent:"#81B3C8", accentStrong:"#A0CBDC", accentInk:"#16232A", or:"#C9B685", eau:"#7FB0BE", ok:"#9BC08F" } }
+  };
+  var OMBRE = { light:"0 1px 2px rgba(42,51,42,.06), 0 6px 18px rgba(42,51,42,.07)", dark:"0 1px 2px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.4)" };
+  var ALERTE = { light:"#B0623F", dark:"#E0906D" };
+
+  function modeEffectif(){
+    var dt = document.documentElement.getAttribute("data-theme");
+    if(dt === "dark") return "dark";
+    if(dt === "light") return "light";
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  }
+
+  function appliquerPalette(nom){
+    var p = PALETTES[nom] || PALETTES.vert;
+    var mode = modeEffectif();
+    var c = p[mode];
+    var s = document.documentElement.style;
+    s.setProperty("--bg", c.bg);
+    s.setProperty("--surface", c.surface);
+    s.setProperty("--surface-2", c.surface2);
+    s.setProperty("--ink", c.ink);
+    s.setProperty("--ink-muted", c.inkMuted);
+    s.setProperty("--border", c.border);
+    s.setProperty("--accent", c.accent);
+    s.setProperty("--accent-strong", c.accentStrong);
+    s.setProperty("--accent-ink", c.accentInk);
+    s.setProperty("--or", c.or);
+    s.setProperty("--eau", c.eau);
+    s.setProperty("--ok", c.ok);
+    s.setProperty("--alerte", ALERTE[mode]);
+    s.setProperty("--shadow", OMBRE[mode]);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute("content", c.bg);
+  }
+
+  // Une palette importée (config sur-mesure) est enregistrée dans PALETTES pour
+  // pouvoir être appliquée et proposée comme les palettes intégrées.
+  function enregistrerPalettePerso(p){
+    if(p && p.cle && p.light && p.dark) PALETTES[p.cle] = p;
+  }
+  enregistrerPalettePerso(reglages.palettePerso);
+
   (function initTheme(){
     var t = null;
     try{ t = localStorage.getItem(K_THEME); }catch(e){}
     if(t) document.documentElement.setAttribute("data-theme", t);
+    appliquerPalette(reglages.palette);
   })();
+
   $("#btn-theme").addEventListener("click", function(){
     var actuel = document.documentElement.getAttribute("data-theme");
     var sombreSysteme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -1224,6 +1385,172 @@
     else suivant = sombreSysteme ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", suivant);
     try{ localStorage.setItem(K_THEME, suivant); }catch(e){}
+    appliquerPalette(reglages.palette);
+  });
+
+  // Suivre le thème système quand aucun choix clair/sombre n'est forcé.
+  if(window.matchMedia){
+    try{
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(){
+        if(!document.documentElement.getAttribute("data-theme")) appliquerPalette(reglages.palette);
+      });
+    }catch(e){}
+  }
+
+  /* Construit une rangée de pastilles de couleur dans « hote ». Le bouton de
+     la palette « courant » est marqué ; un clic appelle onChoix(nom). */
+  function construireChoixPalette(hote, courant, onChoix){
+    var html = "";
+    for(var nom in PALETTES){
+      if(!Object.prototype.hasOwnProperty.call(PALETTES, nom)) continue;
+      var p = PALETTES[nom];
+      html += '<button type="button" class="palette-opt" data-palette="' + nom + '" aria-pressed="' + (nom === courant ? "true" : "false") + '">'
+        + '<span class="pastille-couleur" style="background:' + p.apercu + '"></span>'
+        + '<span class="pnom">' + echapper(p.nom) + '</span></button>';
+    }
+    hote.innerHTML = html;
+    Array.prototype.forEach.call(hote.querySelectorAll("[data-palette]"), function(b){
+      b.addEventListener("click", function(){
+        Array.prototype.forEach.call(hote.querySelectorAll("[data-palette]"), function(x){ x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true");
+        onChoix(b.getAttribute("data-palette"));
+      });
+    });
+  }
+
+  /* ================================================================
+     Écran d'accueil (première utilisation)
+     ================================================================ */
+  // Première utilisation = aucune trace d'un usage précédent sur cet appareil.
+  var premiereUtilisation = false;
+  try{
+    premiereUtilisation = !localStorage.getItem(K_REGLAGES)
+      && !localStorage.getItem(K_CLIENTES)
+      && !localStorage.getItem(K_RDV);
+  }catch(e){ premiereUtilisation = false; }
+
+  var paletteSetup = reglages.palette || "vert";
+
+  function ouvrirSetup(){
+    $("#s-cabinet").value = "";
+    construireChoixPalette($("#setup-palette"), paletteSetup, function(nom){
+      paletteSetup = nom;
+      appliquerPalette(nom);      // aperçu en direct
+    });
+    appliquerPalette(paletteSetup);
+    $("#setup").hidden = false;
+  }
+
+  $("#form-setup").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var f = ev.target;
+    var nom = f.cabinet.value.trim();
+    reglages.cabinet = nom || REGLAGES_DEFAUT.cabinet;
+    reglages.palette = paletteSetup;
+    reglages.installe = true;
+    var choixPresta = (f.presta.value === "vide") ? [] : PRESTATIONS_MODELE.slice();
+    prestations = choixPresta;
+    sauverReglages();
+    sauverPrestations();
+    appliquerPalette(reglages.palette);
+    remplirDatalistPrestations();
+    $("#nom-cabinet").textContent = reglages.cabinet;
+    $("#setup").hidden = true;
+    toutAfficher();
+  });
+
+  /* ================================================================
+     Import d'une configuration (fichier .json préparé à l'avance)
+     ================================================================ */
+  // Valide et applique une config. Renvoie true si appliquée.
+  function appliquerConfig(cfg){
+    if(!cfg || cfg.format !== "cahier-config"){
+      return { ok:false, err:"Ce fichier n'est pas une configuration de cahier clientèle." };
+    }
+    if(cfg.cabinet) reglages.cabinet = String(cfg.cabinet).trim() || REGLAGES_DEFAUT.cabinet;
+    if(cfg.email !== undefined) reglages.email = String(cfg.email || "").trim();
+    if(cfg.taux !== undefined && cfg.taux !== null && cfg.taux !== "") reglages.taux = nombre(cfg.taux);
+    if(cfg.plafond) reglages.plafond = nombre(cfg.plafond);
+
+    // Palette : soit une clé intégrée ("vert"…), soit un objet sur-mesure.
+    if(typeof cfg.palette === "string" && PALETTES[cfg.palette]){
+      reglages.palette = cfg.palette;
+    }else if(cfg.palette && typeof cfg.palette === "object" && cfg.palette.cle && cfg.palette.light && cfg.palette.dark){
+      reglages.palettePerso = cfg.palette;
+      enregistrerPalettePerso(cfg.palette);
+      reglages.palette = cfg.palette.cle;
+    }
+
+    // Prestations : remplacent la liste (une config sert à pré-remplir).
+    if(Array.isArray(cfg.prestations)){
+      prestations = cfg.prestations
+        .filter(function(p){ return p && p.nom; })
+        .map(function(p){ return { id: uid(), nom: String(p.nom).trim(), categorie: String(p.categorie || "").trim(), duree: nombre(p.duree), prix: arrondi(nombre(p.prix)) }; });
+    }
+    return { ok:true, nbPresta: Array.isArray(cfg.prestations) ? prestations.length : null };
+  }
+
+  // Lit un fichier choisi par l'utilisatrice et passe la config à « suite ».
+  function lireFichierConfig(file, suite){
+    if(!file){ return; }
+    var fr = new FileReader();
+    fr.onload = function(){
+      var cfg;
+      try{ cfg = JSON.parse(fr.result); }
+      catch(e){ suite({ ok:false, err:"Fichier illisible : ce n'est pas une configuration valide." }); return; }
+      suite(appliquerConfig(cfg));
+    };
+    fr.onerror = function(){ suite({ ok:false, err:"Impossible de lire ce fichier." }); };
+    fr.readAsText(file);
+  }
+
+  // --- Depuis l'écran d'accueil ---
+  $("#btn-setup-import").addEventListener("click", function(){ $("#setup-import").click(); });
+  $("#setup-import").addEventListener("change", function(){
+    var file = this.files && this.files[0];
+    this.value = "";
+    lireFichierConfig(file, function(res){
+      if(!res.ok){ message("#statut-setup", res.err, "ko"); return; }
+      reglages.installe = true;
+      sauverReglages();
+      sauverPrestations();
+      enregistrerPalettePerso(reglages.palettePerso);
+      appliquerPalette(reglages.palette);
+      remplirDatalistPrestations();
+      $("#nom-cabinet").textContent = reglages.cabinet;
+      $("#setup").hidden = true;
+      toutAfficher();
+    });
+  });
+
+  // --- Depuis les réglages (installation déjà en cours) ---
+  $("#btn-reglages-import").addEventListener("click", function(){ $("#reglages-import").click(); });
+  $("#reglages-import").addEventListener("change", function(){
+    var file = this.files && this.files[0];
+    this.value = "";
+    lireFichierConfig(file, function(res){
+      if(!res.ok){ message("#statut-import", res.err, "ko"); return; }
+      demanderConfirmation(
+        "Appliquer cette configuration ?",
+        "Le nom, les couleurs et la liste des prestations vont être remplacés par ceux du fichier"
+          + (res.nbPresta !== null ? " (" + res.nbPresta + " prestations)" : "")
+          + ". Tes clientes, rendez-vous et revenus ne sont pas touchés.",
+        function(){
+          sauverReglages();
+          sauverPrestations();
+          appliquerPalette(reglages.palette);
+          remplirDatalistPrestations();
+          afficherPrestationsReglages();
+          $("#nom-cabinet").textContent = reglages.cabinet;
+          $("#g-cabinet").value = reglages.cabinet;
+          construireChoixPalette($("#reglages-palette"), reglages.palette, function(nom){
+            reglages.palette = nom; sauverReglages(); appliquerPalette(nom);
+          });
+          message("#statut-import", "Configuration appliquée.", "ok");
+        },
+        "Appliquer"
+      );
+    });
   });
 
   /* ================================================================
@@ -1612,13 +1939,32 @@
     if(selectionne) s.value = selectionne;
   }
 
+  // Remplit le menu déroulant des prestations, groupé par catégorie, avec en
+  // fin de liste « Autre » pour saisir une prestation ponctuelle à la main.
   function remplirDatalistPrestations(){
-    var d = $("#liste-prestations");
-    var html = "";
+    var sel = $("#r-prestation-select");
+    // Regrouper par catégorie en gardant l'ordre d'apparition.
+    var ordre = [], groupes = {};
     for(var i = 0; i < prestations.length; i++){
-      html += '<option value="' + echapper(prestations[i].nom) + '"></option>';
+      var cat = (prestations[i].categorie || "").trim() || "Autres";
+      if(!groupes[cat]){ groupes[cat] = []; ordre.push(cat); }
+      groupes[cat].push(prestations[i]);
     }
-    d.innerHTML = html;
+    var html = '<option value="">— choisir une prestation —</option>';
+    for(var g = 0; g < ordre.length; g++){
+      var liste = groupes[ordre[g]];
+      // Un seul groupe sans catégorie réelle : pas d'entête superflu.
+      var avecEntete = !(ordre.length === 1 && ordre[0] === "Autres");
+      if(avecEntete) html += '<optgroup label="' + echapper(ordre[g]) + '">';
+      for(var j = 0; j < liste.length; j++){
+        var p = liste[j];
+        var etiquette = p.nom + (p.prix ? "  —  " + argent(p.prix) : "");
+        html += '<option value="' + echapper(p.nom) + '">' + echapper(etiquette) + '</option>';
+      }
+      if(avecEntete) html += '</optgroup>';
+    }
+    html += '<option value="__autre__">Autre (saisir à la main)…</option>';
+    sel.innerHTML = html;
   }
 
   function prestationDe(nom){
@@ -1628,12 +1974,26 @@
     return null;
   }
 
-  $("#r-prestation").addEventListener("change", function(){
+  // Nom de prestation effectivement choisi (liste ou saisie « Autre »).
+  function valeurPrestation(){
+    var v = $("#r-prestation-select").value;
+    if(v === "__autre__") return $("#r-prestation-libre").value.trim();
+    return v;
+  }
+
+  $("#r-prestation-select").addEventListener("change", function(){
+    var f = $("#form-rdv");
+    if(this.value === "__autre__"){
+      $("#r-prestation-libre").hidden = false;
+      $("#r-prestation-libre").focus();
+      return;
+    }
+    $("#r-prestation-libre").hidden = true;
     var p = prestationDe(this.value);
     if(!p) return;
-    var f = $("#form-rdv");
-    if(!f.duree.value && p.duree) f.duree.value = p.duree;
-    if(!f.montant.value && p.prix) f.montant.value = p.prix;
+    // Choix explicite : on renseigne durée et tarif (remplace l'existant).
+    if(p.duree) f.duree.value = p.duree;
+    if(p.prix || p.prix === 0) f.montant.value = p.prix;
   });
 
   function majAideCadeau(){ $("#aide-cadeau").hidden = ($("#r-reglement").value !== MODE_CADEAU); }
@@ -1658,10 +2018,21 @@
     remplirSelectClientes(r ? r.clienteId : (clienteId || ""));
     remplirDatalistPrestations();
     f.id.value = r ? r.id : "";
+    // Prestation : sélectionner dans la liste, ou basculer en « Autre » si le
+    // nom enregistré n'y figure pas (prestation ponctuelle / supprimée depuis).
+    var sel = $("#r-prestation-select"), libre = $("#r-prestation-libre");
+    if(r && r.prestation){
+      if(prestationDe(r.prestation)){
+        sel.value = r.prestation; libre.hidden = true; libre.value = "";
+      }else{
+        sel.value = "__autre__"; libre.hidden = false; libre.value = r.prestation;
+      }
+    }else{
+      sel.value = ""; libre.hidden = true; libre.value = "";
+    }
     if(r){
       f.date.value = r.date || "";
       f.heure.value = r.heure || "";
-      f.prestation.value = r.prestation || "";
       f.duree.value = r.duree || "";
       f.montant.value = (r.montant === 0 || r.montant) ? r.montant : "";
       f.statut.value = r.statut || "prevu";
@@ -1681,13 +2052,14 @@
     var f = ev.target;
     if(!f.clienteId.value){ message("#statut-rdv", "Choisis une cliente.", "ko"); return; }
     if(!f.date.value){ message("#statut-rdv", "La date est obligatoire.", "ko"); return; }
-    if(!f.prestation.value.trim()){ message("#statut-rdv", "Indique la prestation.", "ko"); return; }
+    var nomPrestation = valeurPrestation();
+    if(!nomPrestation){ message("#statut-rdv", "Choisis une prestation (ou « Autre » pour la saisir).", "ko"); return; }
 
     var donnees = {
       clienteId: f.clienteId.value,
       date: f.date.value,
       heure: f.heure.value,
-      prestation: f.prestation.value.trim(),
+      prestation: nomPrestation,
       duree: f.duree.value ? nombre(f.duree.value) : 0,
       montant: f.montant.value ? arrondi(nombre(f.montant.value)) : 0,
       statut: f.statut.value,
@@ -2275,6 +2647,12 @@
     f.plafond.value = reglages.plafond;
     f.periodicite.value = reglages.periodicite || "trimestrielle";
     $("#g-frequence").value = String(reglages.frequenceRappel === undefined ? 14 : reglages.frequenceRappel);
+    // Choix de palette : appliqué et enregistré immédiatement au clic.
+    construireChoixPalette($("#reglages-palette"), reglages.palette || "vert", function(nom){
+      reglages.palette = nom;
+      sauverReglages();
+      appliquerPalette(nom);
+    });
     afficherPrestationsReglages();
     afficherCompteurs();
     $("#version-app").textContent = "Cahier clientèle · version " + VERSION;
@@ -2302,43 +2680,104 @@
   });
 
   function afficherPrestationsReglages(){
+    // Datalist des catégories connues (pour le champ catégorie du formulaire).
+    var dcat = $("#liste-categories-presta");
+    var cats = categoriesPrestations();
+    var hcat = "";
+    for(var c = 0; c < cats.length; c++) hcat += '<option value="' + echapper(cats[c]) + '"></option>';
+    dcat.innerHTML = hcat;
+
     var hote = $("#liste-prestations-reglages");
     if(!prestations.length){
-      hote.innerHTML = '<p class="mini-note" style="margin:0">Aucune prestation.</p>';
+      hote.innerHTML = '<p class="mini-note" style="margin:0">Aucune prestation pour l\'instant.</p>';
       return;
     }
-    var html = '<div class="card">';
+    // Regrouper par catégorie, dans l'ordre d'apparition.
+    var ordre = [], groupes = {};
     for(var i = 0; i < prestations.length; i++){
-      var p = prestations[i];
-      html += '<div class="rangee">'
-        + '<span class="lib">' + echapper(p.nom) + (p.duree ? ' <span class="nowrap">· ' + p.duree + ' min</span>' : "") + '</span>'
-        + '<span class="val">' + argent(p.prix)
-        + ' <button type="button" class="fermer" data-suppr-presta="' + i + '" title="Retirer" style="font-size:1rem">&times;</button>'
-        + '</span></div>';
+      var cat = (prestations[i].categorie || "").trim() || "Autres";
+      if(!groupes[cat]){ groupes[cat] = []; ordre.push(cat); }
+      groupes[cat].push(prestations[i]);
     }
-    html += '</div>';
+    var plusieurs = !(ordre.length === 1 && ordre[0] === "Autres");
+    var html = "";
+    for(var g = 0; g < ordre.length; g++){
+      if(plusieurs) html += '<div class="jour-titre">' + echapper(ordre[g]) + '</div>';
+      html += '<div class="card">';
+      var liste = groupes[ordre[g]];
+      for(var j = 0; j < liste.length; j++){
+        var p = liste[j];
+        html += '<div class="rangee">'
+          + '<span class="lib">' + echapper(p.nom) + (p.duree ? ' <span class="nowrap">· ' + p.duree + ' min</span>' : "") + '</span>'
+          + '<span class="val nowrap">' + argent(p.prix)
+          + ' <button type="button" class="fermer" data-edit-presta="' + echapper(p.id) + '" title="Modifier" style="font-size:1rem">✎</button>'
+          + ' <button type="button" class="fermer" data-suppr-presta="' + echapper(p.id) + '" title="Retirer" style="font-size:1.1rem">&times;</button>'
+          + '</span></div>';
+      }
+      html += '</div>';
+    }
     hote.innerHTML = html;
+    Array.prototype.forEach.call(hote.querySelectorAll("[data-edit-presta]"), function(b){
+      b.addEventListener("click", function(){ editerPrestation(b.getAttribute("data-edit-presta")); });
+    });
     Array.prototype.forEach.call(hote.querySelectorAll("[data-suppr-presta]"), function(b){
       b.addEventListener("click", function(){
-        prestations.splice(Number(b.getAttribute("data-suppr-presta")), 1);
+        var pid = b.getAttribute("data-suppr-presta");
+        prestations = prestations.filter(function(x){ return x.id !== pid; });
         sauverPrestations();
+        if($("#p-id").value === pid) resetFormPrestation();
         afficherPrestationsReglages();
         remplirDatalistPrestations();
       });
     });
   }
 
+  function editerPrestation(id){
+    var p = null;
+    for(var i = 0; i < prestations.length; i++) if(prestations[i].id === id) p = prestations[i];
+    if(!p) return;
+    var f = $("#form-prestation");
+    f.id.value = p.id;
+    f.nom.value = p.nom || "";
+    f.categorie.value = p.categorie || "";
+    f.duree.value = p.duree || "";
+    f.prix.value = (p.prix || p.prix === 0) ? p.prix : "";
+    $("#p-nom-label").textContent = "Modifier la prestation";
+    $("#btn-prestation").textContent = "Enregistrer la prestation";
+    $("#btn-prestation-annuler").hidden = false;
+    f.scrollIntoView({ block: "center" });
+    f.nom.focus();
+  }
+
+  function resetFormPrestation(){
+    var f = $("#form-prestation");
+    f.reset();
+    f.id.value = "";
+    $("#p-nom-label").textContent = "Nouvelle prestation";
+    $("#btn-prestation").textContent = "Ajouter la prestation";
+    $("#btn-prestation-annuler").hidden = true;
+  }
+  $("#btn-prestation-annuler").addEventListener("click", resetFormPrestation);
+
   $("#form-prestation").addEventListener("submit", function(ev){
     ev.preventDefault();
     var f = ev.target;
     var nom = f.nom.value.trim();
     if(!nom){ message("#statut-prestation", "Donne un nom à la prestation.", "ko"); return; }
-    prestations.push({ nom: nom, duree: nombre(f.duree.value), prix: arrondi(nombre(f.prix.value)) });
+    var donnees = { nom: nom, categorie: f.categorie.value.trim(), duree: nombre(f.duree.value), prix: arrondi(nombre(f.prix.value)) };
+    var id = f.id.value;
+    if(id){
+      for(var i = 0; i < prestations.length; i++) if(prestations[i].id === id) Object.assign(prestations[i], donnees);
+      message("#statut-prestation", "Prestation modifiée.", "ok");
+    }else{
+      donnees.id = uid();
+      prestations.push(donnees);
+      message("#statut-prestation", "Prestation ajoutée.", "ok");
+    }
     sauverPrestations();
-    f.reset();
+    resetFormPrestation();
     afficherPrestationsReglages();
     remplirDatalistPrestations();
-    message("#statut-prestation", "Prestation ajoutée.", "ok");
   });
 
   function afficherCompteurs(){
@@ -2888,6 +3327,15 @@
   stockageOk = testerStockage();
   $("#nom-cabinet").textContent = reglages.cabinet || REGLAGES_DEFAUT.cabinet;
   $("#fab").hidden = false;
+
+  if(premiereUtilisation){
+    // Nouvelle praticienne : on présente l'écran d'installation.
+    ouvrirSetup();
+  }else if(!reglages.installe){
+    // Installation existante (ex. Florence) : on la marque installée, sans rien changer.
+    reglages.installe = true;
+    sauverReglages();
+  }
   toutAfficher();
 })();
 </script>
