@@ -66,7 +66,7 @@ Signature, thème mauve, 37 prestations relevées sur bettysignature.fr) est liv
 
 | Onglet | Ce qu'il contient |
 |---|---|
-| **Clientes** | En haut, un **agenda** (rendez-vous du jour + prochains, masqué s'il n'y a rien à venir). Puis prénom, nom, adresse mail, téléphone, notes. Recherche, fiche détaillée avec l'historique des séances, appel et mail en un geste. Bouton **« Écrire à mes clientes »** pour un envoi groupé. |
+| **Clientes** | En haut, un **agenda** (rendez-vous du jour + prochains, masqué s'il n'y a rien à venir). Puis prénom, nom, adresse mail, téléphone, **date d'anniversaire**, notes. Recherche, fiche détaillée avec l'historique des séances, appel et mail en un geste. Bouton **« Écrire à mes clientes »** pour un envoi groupé. Une **cloche** en haut prévient des anniversaires proches. |
 | **Rendez-vous** | Un mois à la fois. Date, heure, prestation, durée, montant réglé, mode de règlement, statut (à venir / faite / annulée). |
 | **Revenus** | Chiffre d'affaires encaissé du mois, panier moyen, provision URSSAF, **dépenses**, **ce qu'il te reste**, répartition par mode de règlement, **cartes cadeaux vendues**, 12 derniers mois, cumul de l'année et plafond micro. |
 
@@ -100,6 +100,16 @@ Juste en dessous, **« Ce qu'il te reste »** = encaissé − dépenses − char
 
 Les dépenses figurent dans l'export Excel (section dédiée + colonnes « Dépenses » et « Reste estimé »
 dans le récap mensuel) et dans le rapport PDF (dépenses par poste + « ce qu'il reste »).
+
+## Anniversaires (rappel + offre)
+
+Chaque fiche cliente a une **date d'anniversaire** (facultative ; seuls le jour et le mois comptent,
+l'année sert juste à afficher l'âge). Une **cloche** en haut de l'app porte une pastille dès qu'un
+anniversaire tombe dans les **7 jours** (aujourd'hui inclus). En l'ouvrant : la liste « Aujourd'hui »
+et « Dans les 7 prochains jours », avec âge et liens appeler/écrire, et un bouton **« 🎁 Envoyer une
+offre d'anniversaire »** qui prépare un mail groupé (copie cachée) déjà pré-rempli et pré-coché pour
+les clientes concernées — à ajuster avant d'envoyer. La fenêtre de 7 jours est la constante
+`FENETRE_ANNIV` (côté script).
 
 ## Écrire à mes clientes (envoi groupé)
 

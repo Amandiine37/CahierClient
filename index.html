@@ -101,6 +101,11 @@
   }
   .icon-btn svg{width:18px;height:18px;}
   .icon-btn:active{background:var(--surface-2);}
+  .point-notif{
+    position:absolute; top:5px; right:5px; width:9px; height:9px; border-radius:50%;
+    background:var(--or); border:1.5px solid var(--surface);
+  }
+  .point-notif[hidden]{display:none;}
 
   main{flex:1; padding:.2rem 1.05rem 1rem;}
   .view{display:none;}
@@ -449,6 +454,12 @@
       <h1>Cahier clientèle</h1>
       <p id="nom-cabinet">Mon cabinet</p>
     </div>
+    <button class="icon-btn" id="btn-anniv" type="button" title="Anniversaires" style="position:relative">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+      </svg>
+      <span class="point-notif" id="point-anniv" hidden></span>
+    </button>
     <button class="icon-btn" id="btn-theme" type="button" title="Thème clair / sombre">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
@@ -630,6 +641,7 @@
       </div>
       <div class="champ"><label for="c-email">Adresse mail</label><input id="c-email" name="email" type="email" inputmode="email"></div>
       <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" inputmode="tel"></div>
+      <div class="champ"><label for="c-anniv">Date d'anniversaire (facultatif)</label><input id="c-anniv" name="anniversaire" type="date"><p class="aide">Sert au rappel d'anniversaire (la cloche en haut) pour lancer une petite offre. Si tu ne connais pas l'année, mets n'importe laquelle : seul le jour et le mois comptent.</p></div>
       <div class="champ"><label for="c-notes">Notes (préférences, contre-indications…)</label><textarea id="c-notes" name="notes"></textarea></div>
       <div class="statut" id="statut-cliente"></div>
       <button class="bouton" type="submit">Enregistrer</button>
@@ -762,6 +774,17 @@
       <button class="bouton" type="submit">Enregistrer la dépense</button>
       <button class="bouton danger" type="button" id="supprimer-depense" hidden>Supprimer cette dépense</button>
     </form>
+  </div>
+</div>
+
+<!-- ======================= FEUILLE : ANNIVERSAIRES ======================= -->
+<div class="sheet" id="sheet-anniv" hidden>
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h3>🎂 Anniversaires</h3>
+      <button class="fermer" type="button" data-ferme="sheet-anniv">&times;</button>
+    </div>
+    <div id="corps-anniv"></div>
   </div>
 </div>
 
@@ -949,7 +972,7 @@
 (function(){
   "use strict";
 
-  var VERSION = "1.8";
+  var VERSION = "1.9";
 
   /* ================================================================
      Clés de stockage
@@ -1762,6 +1785,7 @@
       f.nom.value = c.nom || "";
       f.email.value = c.email || "";
       f.tel.value = c.tel || "";
+      f.anniversaire.value = c.anniversaire || "";
       f.notes.value = c.notes || "";
     }
     ouvrirFeuille("sheet-cliente");
@@ -1779,6 +1803,7 @@
       existante.nom = f.nom.value.trim();
       existante.email = f.email.value.trim();
       existante.tel = f.tel.value.trim();
+      existante.anniversaire = f.anniversaire.value || "";
       existante.notes = f.notes.value.trim();
     }else{
       clientes.push({
@@ -1787,6 +1812,7 @@
         nom: f.nom.value.trim(),
         email: f.email.value.trim(),
         tel: f.tel.value.trim(),
+        anniversaire: f.anniversaire.value || "",
         notes: f.notes.value.trim(),
         creeLe: isoDuJour()
       });
@@ -1841,6 +1867,16 @@
     }
     if(!c.tel && !c.email){
       html += '<p class="mini-note">Aucun contact renseigné pour cette cliente.</p>';
+    }
+
+    if(anniversaireDe(c)){
+      var jA = joursAvantAnniv(c);
+      var quandA = (jA === 0) ? "c'est aujourd'hui 🎉" : (jA === 1 ? "demain" : "dans " + jA + " jours");
+      var ageA = ageAuProchain(c);
+      html += '<div class="card" style="margin-top:.6rem"><div class="rangee" style="border:0;padding:0">'
+        + '<span class="lib">🎂 Anniversaire</span>'
+        + '<span class="val">' + echapper(libelleJourMois(c) + (ageA ? " · " + ageA + " ans" : "")) + '</span></div>'
+        + '<p class="mini-note" style="margin:.2rem 0 0">Prochain : ' + echapper(quandA) + '.</p></div>';
     }
 
     html += '<div class="stats-row" style="margin-top:.8rem">'
@@ -2287,26 +2323,35 @@
     return clientes.filter(function(c){ return (c.email || "").trim(); });
   }
 
-  function ouvrirMailGroupe(){
+  // preselectIds : si fourni, seules ces clientes sont cochées d'avance
+  // (les autres décochées). objet/corps : pré-remplissage facultatif.
+  function ouvrirMailGroupe(preselectIds, objet, corps){
     var avec = clientesAvecMail();
     var sans = clientes.length - avec.length;
+    var filtre = preselectIds ? {} : null;
+    if(preselectIds) preselectIds.forEach(function(id){ filtre[id] = true; });
+
     $("#mail-compteur").textContent = avec.length + " avec mail";
     $("#mail-sans-mail").textContent = sans > 0
       ? (sans + " cliente" + (sans > 1 ? "s" : "") + " sans adresse mail ne " + (sans > 1 ? "seront" : "sera") + " pas incluse" + (sans > 1 ? "s" : "") + ".")
       : "";
     $("#mail-panneau-copie").hidden = true;
     message("#statut-mail", "", "");
+    if(objet !== undefined) $("#m-objet").value = objet;
+    if(corps !== undefined) $("#m-corps").value = corps;
 
     if(!avec.length){
       $("#mail-liste").innerHTML = '<div class="vide">Aucune cliente n\'a d\'adresse mail enregistrée. Ajoute un mail dans une fiche pour l\'inclure ici.</div>';
     }else{
       avec.sort(function(a, b){ return nomComplet(a).localeCompare(nomComplet(b), "fr", { sensitivity:"base" }); });
+      var toutCoche = !preselectIds;
       var html = '<div class="card" style="padding:.3rem .6rem">';
-      html += '<label class="case" style="border:0;background:none;padding:.5rem .2rem"><input type="checkbox" id="mail-tout" checked><span class="txt"><b>Tout sélectionner</b></span></label>';
+      html += '<label class="case" style="border:0;background:none;padding:.5rem .2rem"><input type="checkbox" id="mail-tout"' + (toutCoche ? " checked" : "") + '><span class="txt"><b>Tout sélectionner</b></span></label>';
       for(var i = 0; i < avec.length; i++){
         var c = avec[i];
+        var coche = preselectIds ? !!filtre[c.id] : true;
         html += '<label class="case" style="border:0;border-top:1px solid var(--border);background:none;padding:.5rem .2rem">'
-          + '<input type="checkbox" class="mail-coche" value="' + echapper(c.email.trim()) + '" checked>'
+          + '<input type="checkbox" class="mail-coche" value="' + echapper(c.email.trim()) + '"' + (coche ? " checked" : "") + '>'
           + '<span class="txt"><b>' + echapper(nomComplet(c)) + '</b><span>' + echapper(c.email.trim()) + '</span></span></label>';
       }
       html += '</div>';
@@ -2318,7 +2363,102 @@
     }
     ouvrirFeuille("sheet-mail");
   }
-  $("#btn-mail-groupe").addEventListener("click", ouvrirMailGroupe);
+  $("#btn-mail-groupe").addEventListener("click", function(){ ouvrirMailGroupe(); });
+
+  /* ================================================================
+     Anniversaires : rappel (cloche + pastille) et offre groupée
+     ================================================================ */
+  var FENETRE_ANNIV = 7; // jours d'avance pour le rappel
+
+  function anniversaireDe(c){
+    if(!c || !c.anniversaire) return null;
+    var p = String(c.anniversaire).split("-");
+    var m = parseInt(p[1], 10), j = parseInt(p[2], 10);
+    if(!m || !j || m < 1 || m > 12 || j < 1 || j > 31) return null;
+    return { mois: m, jour: j, annee: parseInt(p[0], 10) || 0 };
+  }
+  function joursAvantAnniv(c){
+    var a = anniversaireDe(c); if(!a) return null;
+    var auj = new Date(); auj.setHours(0, 0, 0, 0);
+    var prochain = new Date(auj.getFullYear(), a.mois - 1, a.jour); prochain.setHours(0, 0, 0, 0);
+    if(prochain < auj) prochain = new Date(auj.getFullYear() + 1, a.mois - 1, a.jour);
+    return Math.round((prochain - auj) / 86400000);
+  }
+  function libelleJourMois(c){
+    var a = anniversaireDe(c); if(!a) return "";
+    return new Date(2000, a.mois - 1, a.jour).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+  }
+  function ageAuProchain(c){
+    var a = anniversaireDe(c); if(!a || !a.annee || a.annee < 1900) return null;
+    var auj = new Date(); auj.setHours(0, 0, 0, 0);
+    var prochain = new Date(auj.getFullYear(), a.mois - 1, a.jour); prochain.setHours(0, 0, 0, 0);
+    var an = auj.getFullYear(); if(prochain < auj) an++;
+    return an - a.annee;
+  }
+  function anniversairesAVenir(fenetre){
+    var out = [];
+    for(var i = 0; i < clientes.length; i++){
+      var j = joursAvantAnniv(clientes[i]);
+      if(j !== null && j <= fenetre) out.push({ c: clientes[i], jours: j });
+    }
+    out.sort(function(a, b){ return a.jours - b.jours; });
+    return out;
+  }
+  function afficherPointAnniv(){
+    $("#point-anniv").hidden = anniversairesAVenir(FENETRE_ANNIV).length === 0;
+  }
+
+  function ouvrirAnniversaires(){
+    var liste = anniversairesAVenir(FENETRE_ANNIV);
+    var hote = $("#corps-anniv");
+    if(!liste.length){
+      hote.innerHTML = '<div class="vide"><strong>Aucun anniversaire dans les jours à venir</strong>Ajoute la date d\'anniversaire dans une fiche cliente pour être prévenue ici et lancer une offre.</div>';
+      ouvrirFeuille("sheet-anniv");
+      return;
+    }
+    function ligne(x){
+      var c = x.c;
+      var quand = (x.jours === 0) ? "Aujourd'hui 🎉" : ("Dans " + x.jours + " jour" + (x.jours > 1 ? "s" : "") + " · " + libelleJourMois(c));
+      var age = ageAuProchain(c);
+      var h = '<div class="card"><div class="rangee" style="border:0;padding:0">'
+        + '<span class="lib" style="color:var(--ink)"><b>' + echapper(nomComplet(c)) + '</b></span>'
+        + '<span class="val" style="color:var(--accent)">' + echapper(quand) + '</span></div>';
+      var sous = libelleJourMois(c) + (age ? " · " + age + " ans" : "");
+      h += '<p class="mini-note" style="margin:.15rem 0 .4rem">' + echapper(sous) + '</p>';
+      if(c.tel) h += '<a class="lien-contact" href="tel:' + echapper(c.tel.replace(/\s/g, "")) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>' + echapper(c.tel) + '</span></a>';
+      if(c.email) h += '<a class="lien-contact" href="mailto:' + echapper(c.email) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6 10-6"/></svg><span>' + echapper(c.email) + '</span></a>';
+      h += '</div>';
+      return h;
+    }
+    var auj = liste.filter(function(x){ return x.jours === 0; });
+    var bientot = liste.filter(function(x){ return x.jours > 0; });
+    var html = "";
+    if(auj.length){ html += '<div class="jour-titre">Aujourd\'hui</div>'; auj.forEach(function(x){ html += ligne(x); }); }
+    if(bientot.length){ html += '<div class="jour-titre">Dans les ' + FENETRE_ANNIV + ' prochains jours</div>'; bientot.forEach(function(x){ html += ligne(x); }); }
+
+    var avecMail = liste.filter(function(x){ return (x.c.email || "").trim(); });
+    if(avecMail.length){
+      html += '<button class="bouton" type="button" id="btn-offre-anniv" style="margin-top:.4rem">🎁 Envoyer une offre d\'anniversaire</button>';
+      html += '<p class="mini-note">Prépare un mail (en copie cachée) pour les ' + avecMail.length + ' cliente(s) concernée(s) qui ont une adresse. Tu pourras ajuster la liste et le texte avant d\'envoyer.</p>';
+    }else{
+      html += '<p class="mini-note">Aucune de ces clientes n\'a d\'adresse mail : contacte-les par téléphone avec les liens ci-dessus.</p>';
+    }
+    hote.innerHTML = html;
+
+    var boutonOffre = $("#btn-offre-anniv");
+    if(boutonOffre){
+      boutonOffre.addEventListener("click", function(){
+        fermerFeuille("sheet-anniv");
+        var ids = avecMail.map(function(x){ return x.c.id; });
+        var corps = "Bonjour,\n\nÀ l'occasion de votre anniversaire, j'ai le plaisir de vous offrir "
+          + "[à compléter : -10 %, un soin découvert, etc.], à profiter jusqu'au [date].\n\n"
+          + "Au plaisir de vous accueillir,\n" + (reglages.cabinet || "");
+        ouvrirMailGroupe(ids, "Un petit cadeau pour votre anniversaire 🎁", corps);
+      });
+    }
+    ouvrirFeuille("sheet-anniv");
+  }
+  $("#btn-anniv").addEventListener("click", ouvrirAnniversaires);
 
   function adressesCochees(){
     return Array.prototype.map.call(document.querySelectorAll(".mail-coche:checked"), function(x){ return x.value; });
@@ -3378,6 +3518,7 @@
     afficherRevenus();
     remplirPeriodes();
     afficherRappel();
+    afficherPointAnniv();
   }
 
   stockageOk = testerStockage();
