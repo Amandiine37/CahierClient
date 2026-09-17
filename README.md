@@ -169,7 +169,10 @@ Trois exports dans les réglages (roue crantée), comme sur Reventes :
 - **Export PDF** — le rapport d'activité d'un mois ou d'une année, aussi disponible en bas de
   l'onglet Revenus : chiffres clés, charges estimées, modes de règlement, prestations et détail
   des séances. Il s'enregistre via l'impression du téléphone (« Enregistrer en PDF ») ;
-- **Sauvegarde complète** (`.json`) — se recolle dans « Restaurer » pour tout remettre en place.
+- **Sauvegarde complète** (`.json`) — se recharge dans « Restaurer » pour tout remettre en place,
+  soit en **choisissant le fichier** exporté (« Choisir un fichier de sauvegarde »), soit en collant
+  son contenu. La restauration vérifie le format (`cahier-clientele`) et refuse un fichier de
+  configuration ou illisible.
 
 Les chiffres du rapport PDF passent par les mêmes fonctions que les écrans (`estEncaisse`,
 `estImpaye`) : le PDF ne peut pas afficher un autre total que l'onglet Revenus.

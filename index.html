@@ -921,9 +921,12 @@
 
     <div class="separateur"></div>
     <h2 class="section">Restaurer</h2>
-    <p class="aide">Colle ici le contenu d'une sauvegarde complète pour la réinstaller. Cela remplace tout le contenu actuel.</p>
+    <p class="aide">Recharge une sauvegarde complète (le fichier <code>.json</code> exporté plus haut). Cela remplace tout le contenu actuel.</p>
+    <button class="bouton secondaire" type="button" id="btn-restaurer-fichier">Choisir un fichier de sauvegarde</button>
+    <input type="file" id="restaurer-import" accept="application/json,.json" hidden>
+    <p class="aide" style="margin-top:.8rem">Ou colle le contenu de la sauvegarde à la main :</p>
     <div class="champ"><textarea id="zone-restaurer" placeholder="Colle le contenu de la sauvegarde…"></textarea></div>
-    <button class="bouton secondaire" type="button" id="btn-restaurer">Restaurer cette sauvegarde</button>
+    <button class="bouton secondaire" type="button" id="btn-restaurer">Restaurer le texte collé</button>
     <div class="statut" id="statut-restaurer"></div>
 
     <div class="separateur"></div>
@@ -972,7 +975,7 @@
 (function(){
   "use strict";
 
-  var VERSION = "1.9";
+  var VERSION = "2.0";
 
   /* ================================================================
      Clés de stockage
@@ -3143,14 +3146,14 @@
     else message("#statut-sauvegarde", "Copie impossible : sélectionne le texte à la main.", "ko");
   });
 
-  $("#btn-restaurer").addEventListener("click", function(){
-    var texte = $("#zone-restaurer").value.trim();
-    if(!texte){ message("#statut-restaurer", "Colle d'abord le contenu d'une sauvegarde.", "ko"); return; }
+  function restaurerDepuisTexte(texte){
+    texte = (texte || "").trim();
+    if(!texte){ message("#statut-restaurer", "Choisis un fichier de sauvegarde, ou colle son contenu.", "ko"); return; }
     var data;
     try{ data = JSON.parse(texte); }
     catch(e){ message("#statut-restaurer", "Ce n'est pas une sauvegarde lisible.", "ko"); return; }
     if(!data || data.format !== "cahier-clientele" || !Array.isArray(data.clientes)){
-      message("#statut-restaurer", "Ce fichier ne vient pas de cette application.", "ko");
+      message("#statut-restaurer", "Ce fichier ne vient pas de cette application (attendu : une sauvegarde complète, pas une configuration).", "ko");
       return;
     }
     demanderConfirmation(
@@ -3178,6 +3181,18 @@
       },
       "Restaurer"
     );
+  }
+
+  $("#btn-restaurer").addEventListener("click", function(){ restaurerDepuisTexte($("#zone-restaurer").value); });
+  $("#btn-restaurer-fichier").addEventListener("click", function(){ $("#restaurer-import").click(); });
+  $("#restaurer-import").addEventListener("change", function(){
+    var file = this.files && this.files[0];
+    this.value = "";
+    if(!file) return;
+    var fr = new FileReader();
+    fr.onload = function(){ restaurerDepuisTexte(String(fr.result)); };
+    fr.onerror = function(){ message("#statut-restaurer", "Impossible de lire ce fichier.", "ko"); };
+    fr.readAsText(file);
   });
 
   /* ---------- Rappel de sauvegarde ---------- */
