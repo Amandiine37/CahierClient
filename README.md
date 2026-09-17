@@ -105,11 +105,15 @@ dans le récap mensuel) et dans le rapport PDF (dépenses par poste + « ce qu'i
 
 Chaque fiche cliente a une **date d'anniversaire** (facultative ; seuls le jour et le mois comptent,
 l'année sert juste à afficher l'âge). Une **cloche** en haut de l'app porte une pastille dès qu'un
-anniversaire tombe dans les **7 jours** (aujourd'hui inclus). En l'ouvrant : la liste « Aujourd'hui »
-et « Dans les 7 prochains jours », avec âge et liens appeler/écrire, et un bouton **« 🎁 Envoyer une
-offre d'anniversaire »** qui prépare un mail groupé (copie cachée) déjà pré-rempli et pré-coché pour
-les clientes concernées — à ajuster avant d'envoyer. La fenêtre de 7 jours est la constante
-`FENETRE_ANNIV` (côté script).
+anniversaire tombe dans les **7 jours** (aujourd'hui inclus). En l'ouvrant, la feuille montre :
+
+1. **Le rappel** — « Aujourd'hui » et « Dans les 7 prochains jours », avec âge et liens appeler/écrire,
+   et un bouton **« 🎁 Envoyer une offre d'anniversaire »** qui prépare un mail groupé (copie cachée)
+   déjà pré-rempli et pré-coché pour les clientes concernées. La fenêtre est la constante `FENETRE_ANNIV`.
+2. **Un calendrier navigable** — mois par mois (‹ ›), au-delà du mois en cours : les jours avec
+   anniversaire sont marqués (pastille dorée), aujourd'hui est entouré, et la liste du mois donne
+   jour · nom · âge. Toucher un nom ouvre sa fiche. La cloche et sa pastille (le rappel) restent
+   inchangées : le calendrier sert à consulter, pas à notifier.
 
 ## Écrire à mes clientes (envoi groupé)
 
