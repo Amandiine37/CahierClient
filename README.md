@@ -111,9 +111,11 @@ anniversaire tombe dans les **7 jours** (aujourd'hui inclus). En l'ouvrant, la f
    et un bouton **« 🎁 Envoyer une offre d'anniversaire »** qui prépare un mail groupé (copie cachée)
    déjà pré-rempli et pré-coché pour les clientes concernées. La fenêtre est la constante `FENETRE_ANNIV`.
 2. **Un calendrier navigable** — mois par mois (‹ ›), au-delà du mois en cours : les jours avec
-   anniversaire sont marqués (pastille dorée), aujourd'hui est entouré, et la liste du mois donne
-   jour · nom · âge. Toucher un nom ouvre sa fiche. La cloche et sa pastille (le rappel) restent
-   inchangées : le calendrier sert à consulter, pas à notifier.
+   anniversaire sont marqués (pastille dorée) et **tappables** (toucher le jour surligne la ou les
+   clientes du jour), aujourd'hui est entouré, et la liste du mois donne jour · nom · âge — toucher
+   un nom ouvre sa fiche. Un anniversaire du **29 février** (ou tout jour hors du mois affiché) pose
+   sa pastille sur le dernier jour du mois, pour que grille et liste restent cohérentes. La cloche et
+   sa pastille (le rappel) restent inchangées : le calendrier sert à consulter, pas à notifier.
 
 ## Écrire à mes clientes (envoi groupé)
 

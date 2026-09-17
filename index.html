@@ -118,6 +118,9 @@
   .cal .case-jour.anniv{background:var(--surface-2); font-weight:600; color:var(--accent);}
   .cal .case-jour.aujour{outline:2px solid var(--accent); outline-offset:-2px;}
   .cal .case-jour .pt{position:absolute; bottom:5px; width:5px; height:5px; border-radius:50%; background:var(--or);}
+  .cal button.case-jour{border:0; font-family:inherit; cursor:pointer;}
+  .cal button.case-jour:active{filter:brightness(.95);}
+  .ligne.surligne{outline:2px solid var(--accent); outline-offset:-2px; transition:outline .1s;}
 
   main{flex:1; padding:.2rem 1.05rem 1rem;}
   .view{display:none;}
@@ -987,7 +990,7 @@
 (function(){
   "use strict";
 
-  var VERSION = "2.1";
+  var VERSION = "2.2";
 
   /* ================================================================
      Clés de stockage
@@ -2444,8 +2447,15 @@
     var decalage = (new Date(an, mois - 1, 1).getDay() + 6) % 7; // Lundi = 0
     var nbJours = new Date(an, mois, 0).getDate();
     var liste = anniversairesDuMois(moisAnniv);
+    // La pastille du calendrier se pose sur le jour du mois, mais jamais après
+    // le dernier jour : un 29 février (ou un jour hors du mois) atterrit sur le
+    // dernier jour affiché, pour qu'un anniversaire de la liste ait toujours sa
+    // pastille — grille et liste restent cohérentes.
     var parJour = {};
-    liste.forEach(function(x){ (parJour[x.jour] = parJour[x.jour] || []).push(x); });
+    liste.forEach(function(x){
+      var jj = Math.min(x.jour, nbJours);
+      (parJour[jj] = parJour[jj] || []).push(x);
+    });
     var ajd = isoDuJour();
 
     var html = '<div class="cal">';
@@ -2453,18 +2463,25 @@
     for(var v = 0; v < decalage; v++) html += '<div class="case-jour vide"></div>';
     for(var d = 1; d <= nbJours; d++){
       var dISO = an + "-" + String(mois).padStart(2, "0") + "-" + String(d).padStart(2, "0");
-      var cls = "case-jour" + (parJour[d] ? " anniv" : "") + (dISO === ajd ? " aujour" : "");
-      html += '<div class="' + cls + '">' + d + (parJour[d] ? '<span class="pt"></span>' : "") + '</div>';
+      var estAnniv = !!parJour[d];
+      var cls = "case-jour" + (estAnniv ? " anniv" : "") + (dISO === ajd ? " aujour" : "");
+      if(estAnniv){
+        html += '<button type="button" class="' + cls + '" data-jour-anniv="' + d + '">' + d + '<span class="pt"></span></button>';
+      }else{
+        html += '<div class="' + cls + '">' + d + '</div>';
+      }
     }
     html += '</div>';
 
     if(!liste.length){
       html += '<p class="mini-note" style="margin-top:.6rem">Aucun anniversaire ce mois-ci.</p>';
     }else{
-      html += '<div style="margin-top:.6rem">';
+      html += '<p class="mini-note" style="margin:.5rem 0 .2rem">Touche un jour marqué, ou un nom, pour ouvrir la fiche.</p>';
+      html += '<div id="anniv-liste-mois">';
       liste.forEach(function(x){
         var age = (x.annee && x.annee >= 1900) ? (an - x.annee) : null;
-        html += '<button class="ligne" type="button" data-fiche-anniv="' + echapper(x.c.id) + '">'
+        var jourCase = Math.min(x.jour, nbJours);
+        html += '<button class="ligne" type="button" data-fiche-anniv="' + echapper(x.c.id) + '" data-jour-ligne="' + jourCase + '">'
           + '<span class="pastille">' + x.jour + '</span>'
           + '<span class="corps"><span class="nom">' + echapper(nomComplet(x.c)) + '</span>'
           + '<span class="detail">' + echapper(libelleJourMois(x.c) + (age ? " · " + age + " ans" : "")) + '</span></span>'
@@ -2473,8 +2490,23 @@
       html += '</div>';
     }
     $("#anniv-calendrier").innerHTML = html;
+
+    // Clic sur un nom → sa fiche.
     Array.prototype.forEach.call($("#anniv-calendrier").querySelectorAll("[data-fiche-anniv]"), function(b){
       b.addEventListener("click", function(){ fermerFeuille("sheet-anniv"); ouvrirFiche(b.getAttribute("data-fiche-anniv")); });
+    });
+    // Clic sur un jour marqué → mettre en évidence la (ou les) cliente(s) de ce jour.
+    Array.prototype.forEach.call($("#anniv-calendrier").querySelectorAll("[data-jour-anniv]"), function(b){
+      b.addEventListener("click", function(){
+        var jour = b.getAttribute("data-jour-anniv");
+        var lignes = $("#anniv-calendrier").querySelectorAll('[data-jour-ligne="' + jour + '"]');
+        for(var i = 0; i < lignes.length; i++){
+          if(i === 0) lignes[i].scrollIntoView({ block: "nearest" });
+          var el = lignes[i];
+          el.classList.add("surligne");
+          window.setTimeout((function(x){ return function(){ x.classList.remove("surligne"); }; })(el), 1600);
+        }
+      });
     });
   }
 
