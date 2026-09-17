@@ -110,14 +110,16 @@
   /* ---------- Calendrier des anniversaires ---------- */
   .cal{display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-top:.4rem;}
   .cal .jour-entete{font-size:.62rem; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); text-align:center; padding:.15rem 0;}
+  /* Cases compactes (pas carrées) : la grille reste courte pour laisser voir
+     la liste des anniversaires du mois juste en dessous, sans avoir à scroller. */
   .cal .case-jour{
-    aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; position:relative;
-    border-radius:9px; font-size:.82rem; color:var(--ink); background:var(--surface);
+    min-height:2rem; padding:.28rem 0 .5rem; display:flex; align-items:center; justify-content:center; position:relative;
+    border-radius:8px; font-size:.82rem; color:var(--ink); background:var(--surface);
   }
   .cal .case-jour.vide{background:transparent;}
   .cal .case-jour.anniv{background:var(--surface-2); font-weight:600; color:var(--accent);}
   .cal .case-jour.aujour{outline:2px solid var(--accent); outline-offset:-2px;}
-  .cal .case-jour .pt{position:absolute; bottom:5px; width:5px; height:5px; border-radius:50%; background:var(--or);}
+  .cal .case-jour .pt{position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:var(--or);}
   .cal button.case-jour{border:0; font-family:inherit; cursor:pointer;}
   .cal button.case-jour:active{filter:brightness(.95);}
   .ligne.surligne{outline:2px solid var(--accent); outline-offset:-2px; transition:outline .1s;}
@@ -990,7 +992,7 @@
 (function(){
   "use strict";
 
-  var VERSION = "2.2";
+  var VERSION = "2.3";
 
   /* ================================================================
      Clés de stockage
@@ -2476,7 +2478,7 @@
     if(!liste.length){
       html += '<p class="mini-note" style="margin-top:.6rem">Aucun anniversaire ce mois-ci.</p>';
     }else{
-      html += '<p class="mini-note" style="margin:.5rem 0 .2rem">Touche un jour marqué, ou un nom, pour ouvrir la fiche.</p>';
+      html += '<div class="jour-titre" style="margin-top:.7rem">Anniversaires du mois <span style="text-transform:none;letter-spacing:0">(touche un nom pour la fiche)</span></div>';
       html += '<div id="anniv-liste-mois">';
       liste.forEach(function(x){
         var age = (x.annee && x.annee >= 1900) ? (an - x.annee) : null;
